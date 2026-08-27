@@ -1,0 +1,13 @@
+[
+  "@hydrooj/ui-default",
+  "@hydrooj/hydrojudge",
+  "@hydrooj/fps-importer",
+  "@hydrooj/a11y",
+  "/root/.hydro/addons/hydroac-client",
+  "/root/.hydro/addons/ProblemIde",
+  "/root/.hydro/addons/LearningScaffold",
+  "/root/.hydro/addons/AiTutor",
+  "/root/.hydro/addons/AiAssistant",
+  "/root/.hydro/addons/AiAnalysis",
+  "/root/.hydro/addons/HomePage"
+]

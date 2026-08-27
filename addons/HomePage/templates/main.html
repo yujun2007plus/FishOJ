@@ -1,0 +1,69 @@
+{% set page_name = "homepage" %}
+{% extends "layout/basic.html" %}
+{% block content %}
+<div class="fishoj-home">
+  <section class="fh-hero">
+    <div class="fh-deco"></div>
+    <div class="fh-hero-tag">AI 驱动的新一代在线评测平台</div>
+    <h1>FishOJ<span class="fh-gold"> · </span>让每次提交<br>都有 <span class="fh-gold">AI</span> 相伴</h1>
+    <p>基于 Hydro 构建的在线评测系统，内置 AI 助手与 AI 分析双引擎——写题时随时提问，提交后即刻复盘，你的专属刷题搭子。</p>
+    <div class="fh-hero-actions">
+      <a class="fh-btn fh-btn-gold" href="/p">🚀 开始刷题</a>
+      <a class="fh-btn fh-btn-ghost" href="/contest">🏆 查看比赛</a>
+    </div>
+    <div class="fh-hero-stats">
+      <div class="fh-stat"><b>{{ problemCountText | default('1000+') }}</b><span>题目总量</span></div>
+      <div class="fh-stat"><b>{{ submissionCountText | default('100000+') }}</b><span>提交记录</span></div>
+      <div class="fh-stat"><b>2 大</b><span>AI 能力</span></div>
+      <div class="fh-stat"><b>7×24</b><span>在线评测</span></div>
+    </div>
+  </section>
+
+  <div class="fh-section-head">
+    <h2>智能双引擎</h2>
+  </div>
+  <div class="fh-ai-grid">
+    <div class="fh-ai-card fh-assistant">
+      <div class="fh-ai-badge">已上线</div>
+      <div class="fh-ai-icon">💬</div>
+      <h3>AI 助手</h3>
+      <div class="fh-en">AI Assistant</div>
+      <p>写题卡住了？在题目页唤起 AI 助手，像和学长聊天一样问问题。</p>
+      <ul class="fh-ai-points">
+        <li>理解题目语境，回答贴着本题走</li>
+        <li>多轮对话 + 历史记录，思路连续不断层</li>
+        <li>划选题目文字，一键发送提问</li>
+      </ul>
+      <a class="fh-ai-go" href="/p">去题目页体验 <span class="fh-arr">→</span></a>
+    </div>
+
+    <div class="fh-ai-card fh-analysis">
+      <div class="fh-ai-badge">已上线</div>
+      <div class="fh-ai-icon">📊</div>
+      <h3>AI 分析</h3>
+      <div class="fh-en">AI Analysis</div>
+      <p>提交之后别急着下一题，让 AI 帮你把这份题解吃透。</p>
+      <ul class="fh-ai-points">
+        <li>逐条剖析评测结果，错在哪一目了然</li>
+        <li>复盘复杂度与边界情况，补齐思路盲区</li>
+        <li>生成可沉淀的复盘笔记</li>
+      </ul>
+      <a class="fh-ai-go" href="/p">去题目页体验 <span class="fh-arr">→</span></a>
+    </div>
+  </div>
+
+  <div class="fh-section-head">
+    <h2>快捷入口</h2>
+  </div>
+  <div class="fh-quick-grid">
+    <a class="fh-quick-card" href="/p"><span class="fh-q-icon">📚</span><b>题目列表</b><span>从简单题开始热身</span></a>
+    <a class="fh-quick-card" href="/training"><span class="fh-q-icon">🎓</span><b>训练计划</b><span>系统化进阶路线</span></a>
+    <a class="fh-quick-card" href="/contest"><span class="fh-q-icon">⚔️</span><b>比赛</b><span>实时排名竞技</span></a>
+    <a class="fh-quick-card" href="/vip"><span class="fh-q-icon">👑</span><b>VIP 会员</b><span>解锁更多 AI 额度</span></a>
+  </div>
+
+  <div class="fh-notice">📢 <b>公告：</b>AI 助手与 AI 分析已上线——进入任意题目页即可体验智能双引擎。</div>
+
+  <footer class="fh-footer">Powered by <b>Hydro</b> · FishOJ Team (24软工01)</footer>
+</div>
+{% endblock %}

@@ -15,10 +15,6 @@ export async function getLearningProblem(ctx: Context, domainId: string, pid: st
     return problemColl(ctx).findOne({ domainId, pid });
 }
 
-export async function listLearningProblems(ctx: Context, domainId: string) {
-    return problemColl(ctx).find({ domainId }).sort({ updatedAt: -1 }).toArray();
-}
-
 export async function upsertLearningProblem(
     ctx: Context,
     domainId: string,

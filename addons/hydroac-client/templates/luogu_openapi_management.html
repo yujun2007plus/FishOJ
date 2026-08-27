@@ -1,0 +1,38 @@
+{% extends "manage_base.html" %}
+{% block manage_content %}
+<div class="section">
+  <div class="section__header">
+    <h1 class="section__title">Luogu OpenAPI 管理</h1>
+  </div>
+  <div class="section__body typo">
+    <p>若您不需要此功能，可在 控制面板->官方插件管理 中关闭 <code>luogu</code> 和 <code>luogu-management</code> 模块。</p>
+    
+    <br />
+    <a class="button primary rounded" href="https://hydro.ac/luogu/pay">购买洛谷 OpenAPI 套餐</a>
+    <a class="button primary rounded" href="https://docs.lgapi.cn/open/">洛谷 OpenAPI 文档</a>
+    <br />
+
+    {% if accounts.length %}
+    <p>已添加的洛谷 OpenAPI 密钥：</p>
+    <ul>
+      {% for account in accounts %}
+      <li>
+        {{ account.handle }}
+        <form method="POST" style="display: inline; margin-left: 10px;">
+          <input type="hidden" name="operation" value="delete">
+          <input type="hidden" name="handle" value="{{ account.handle }}">
+          <button type="submit" class="typo-a" onclick="return confirm('确定要删除此密钥吗？')">删除</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="POST">
+      <input type="hidden" name="operation" value="add">
+      <input type="text" class="textbox" name="token" placeholder="请输入洛谷 OpenAPI 密钥">
+      <button type="submit" class="button primary rounded">添加密钥</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

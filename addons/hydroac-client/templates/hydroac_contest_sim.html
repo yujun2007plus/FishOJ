@@ -1,0 +1,84 @@
+{% extends "layout/basic.html" %}
+{% import "components/contest.html" as contest with context %}
+{% import "components/user.html" as user with context %}
+{% block content %}
+{{ set(UiContext, 'tdoc', tdoc) }}
+{{ set(UiContext, 'result', result) }}
+<div class="row">
+  <div class="medium-9 columns">
+    <div class="section">
+      <div class="section__header">
+        <h1 class="section__title">远程代码相似度对比</h1>
+        {% if not progress %}
+        <div class="section__tools">
+          <form method="post">
+            <button type="submit" class="primary rounded button"><span class="icon icon-refresh"></span>
+              {{ _('Run') if (not result) and (not progress) else _('Re-run') }}
+            </button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      <style>
+        .col--sim { width: 80px; }
+        .col--op { width: 80px; }
+      </style>
+      <div class="section__body typo">
+        <blockquote class="note">
+          {% if remoteEndpoint %}<p>当前远端服务：<code>{{ remoteEndpoint }}</code></p>{% endif %}
+        </blockquote>
+        {% if progress %}
+          {{ nothing.render('代码相似度对比正在远端运行，请等待分析结果完成。') }}
+        {% elif not result %}
+          {{ nothing.render('这场比赛还没有运行过代码相似度对比。') }}
+        {% elif typeof(result) == 'string' %}
+          {{ nothing.render(result) }}
+        {% else %}
+          {% set v = false %}
+          {% for r in result %}{% if r.result.length %}
+            {% set v = true %}
+            <h3>{{ r.name }}</h3>
+            {% for group in r.groups %}
+            <details>
+              <summary>关联用户：{% for uid in group.users %}{{ user.render_inline(udict[uid], avatar=false, badge=false) }}{% if not loop.last %}、{% endif %}{% endfor %}；相似度：{{ group.minSimilarity|round(2) }} ~ {{ group.maxSimilarity|round(2) }}</summary>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>代码1 ID</th>
+                    <th>代码1 用户</th>
+                    <th>代码2 ID</th>
+                    <th>代码2 用户</th>
+                    <th class="col--sim">相似度</th>
+                    <th class="col--op">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for rr in group.result %}
+                    <tr>
+                      <td><a href="{{ url('record_detail', rid=rr.rids[0]) }}">{{ rr.rids[0] }}</a></td>
+                      <td>{{ user.render_inline(udict[rr.uids[0]], avatar=false, badge=false) }}</td>
+                      <td><a href="{{ url('record_detail', rid=rr.rids[1]) }}">{{ rr.rids[1] }}</a></td>
+                      <td>{{ user.render_inline(udict[rr.uids[1]], avatar=false, badge=false) }}</td>
+                      <td class="col--sim">{{ rr.similarity|round(2) }}</td>
+                      <td class="col--op">
+                        <a data-compare data-pid="{{ r.pid }}" data-compareid="{{ rr.id }}">查看</a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </details>
+            {% endfor %}
+          {% endif %}{% endfor %}
+          {% if not v %}
+            {{ nothing.render('没有发现相似代码。') }}
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="medium-3 columns">
+  {% include "partials/contest_sidebar_management.html" %}
+  </div>
+</div>
+{% endblock %}

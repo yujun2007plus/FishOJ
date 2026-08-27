@@ -45,15 +45,16 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  color: #fff;
-  background: linear-gradient(180deg, #ff9f43 0%, #ff7a00 100%);
-  box-shadow: 0 2px 8px rgba(255, 122, 0, 0.35);
+  color: #3a2606;
+  background: linear-gradient(135deg, #ffc45e 0%, #f59e0b 60%, #f97316 100%);
+  box-shadow: 0 12px 26px -10px rgba(255, 159, 10, 0.65);
   transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
 }
 
 .record-ai-await-start__btn:hover:not(:disabled) {
-  filter: brightness(1.05);
-  box-shadow: 0 4px 14px rgba(255, 122, 0, 0.45);
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+  box-shadow: 0 16px 32px -10px rgba(255, 159, 10, 0.75);
 }
 
 .record-ai-await-start__btn:active:not(:disabled) {
@@ -98,8 +99,8 @@
 .record-ai-stream-panel .spinner {
   width: 18px;
   height: 18px;
-  border: 3px solid rgba(0, 0, 0, 0.15);
-  border-top-color: #409eff;
+  border: 3px solid rgba(0, 0, 0, 0.12);
+  border-top-color: #f0b429;
   border-radius: 50%;
   animation: record-ai-spin 0.8s linear infinite;
   flex: 0 0 auto;
@@ -115,7 +116,7 @@
 
 .theme--dark .record-ai-stream-panel .spinner {
   border-color: rgba(255, 255, 255, 0.12);
-  border-top-color: #58a6ff;
+  border-top-color: #ffc45e;
 }
 
 .problem-ide-ai-panel #recordAiStreamRoot.record-ai-stream-panel--await-start {

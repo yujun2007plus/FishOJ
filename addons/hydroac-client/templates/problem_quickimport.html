@@ -1,0 +1,20 @@
+{% extends "layout/basic.html" %}
+{% block content %}
+<div class="row">
+  <div class="medium-12 columns">
+    <div class="section">
+      <div class="section__header">
+        <h1 class="section__title">快速导入题库</h1>
+      </div>
+      <div class="section__body">     
+        <form method="POST">
+          <button type="submit" name="type" value="srqc" class="button primary rounded">导入深入浅出题库</button>
+        </form>
+        <form method="POST">
+          <button type="submit" name="type" value="ybtbas" class="button primary rounded">导入一本通编程启蒙题库</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

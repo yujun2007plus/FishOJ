@@ -1,0 +1,37 @@
+{% extends "manage_base.html" %}
+{% block manage_content %}
+<div class="section">
+  <div class="section__header">
+    <h1 class="section__title">远程查重 OAuth 管理</h1>
+  </div>
+  <div class="section__body typo">
+    <p>远程服务：<code>{{ endpoint }}</code></p>
+    <p>OAuth Client ID：<code>{{ clientId or '未配置' }}</code></p>
+    <p>提交范围：<code>{{ type }}</code></p>
+    {% if authorizationError %}
+      <p class="note warn">最近一次设备授权失败：{{ authorizationError }}</p>
+    {% endif %}
+    {% if device %}
+      <p>请访问 <a href="{{ device.verificationUriComplete or device.verificationUri }}" target="_blank" rel="noopener">{{ device.verificationUri }}</a>，并输入设备码：</p>
+      <p><strong><code>{{ device.userCode }}</code></strong></p>
+      <p>服务会自动轮询授权结果；设备授权请求会在远程服务给出的有效期后过期。</p>
+    {% elif authorized %}
+      <p>远程查重服务已授权。</p>
+    {% else %}
+      <p>远程查重服务尚未授权。</p>
+    {% endif %}
+    <form method="post" style="display: inline">
+      <input type="hidden" name="csrfToken" value="{{ csrfToken }}">
+      <input type="hidden" name="operation" value="start">
+      <button type="submit" class="button primary rounded">开始设备授权</button>
+    </form>
+    {% if authorized %}
+    <form method="post" style="display: inline; margin-left: 10px">
+      <input type="hidden" name="csrfToken" value="{{ csrfToken }}">
+      <input type="hidden" name="operation" value="revoke">
+      <button type="submit" class="button rounded" onclick="return confirm('确定要撤销远程查重授权吗？')">撤销授权</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

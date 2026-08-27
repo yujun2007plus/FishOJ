@@ -16,8 +16,8 @@ export function getReviewModalStyles(): string {
     .record-ai-stream-panel .spinner {
       width: 18px;
       height: 18px;
-      border: 3px solid rgba(0,0,0,.15);
-      border-top-color: #409eff;
+      border: 3px solid rgba(0,0,0,.12);
+      border-top-color: #f0b429;
       border-radius: 50%;
       animation: record-ai-spin .8s linear infinite;
       flex: 0 0 auto;
@@ -30,7 +30,7 @@ export function getReviewModalStyles(): string {
     @keyframes record-ai-spin { to { transform: rotate(360deg); } }
     .theme--dark .record-ai-stream-panel .spinner {
       border-color: rgba(255,255,255,.12);
-      border-top-color: #58a6ff;
+      border-top-color: #ffc45e;
     }
     `;
 }

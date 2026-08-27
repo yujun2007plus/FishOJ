@@ -1,0 +1,47 @@
+{% extends "manage_base.html" %}
+{% block manage_content %}
+<div class="section">
+  <div class="section__header">
+    <h1 class="section__title">{{ _('Addons') }}</h1>
+  </div>
+  <div class="section__body no-padding">
+    <table class="data-table">
+      <colgroup>
+        <col class="col--name">
+        <col class="col--ver">
+        <col class="col--status">
+        <col class="col--action">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="col--name">{{ _('Name') }}</th>
+          <th class="col--ver">{{ _('Version') }}</th>
+          <th class="col--status">{{ _('Status') }}</th>
+          <th class="col--action">{{ _('Action') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {%- for name, version in allFeatures -%}
+      <tr>
+        <td class="col--name">{{ name }}</td>
+        <td class="col--ver">{{ version }}</td>
+        <td class="col--status">
+          {% set disabled = disabledFeatures.includes(name) %}
+          <span>{% if disabled %}{{ _('Disabled') }}{% else %}{{ _('Enabled') }}{% endif %}</span>
+        </td>
+        <td class="col--action">
+          <form method="post">
+            <input type="hidden" name="feature" value="{{ name }}">
+            <input type="hidden" name="operation" value="edit_status">
+            <button type="submit" class="typo-a">
+              {{ _('Enable') if disabled else _('Disable') }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {%- endfor -%}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
