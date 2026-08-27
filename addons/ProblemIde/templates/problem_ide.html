@@ -209,27 +209,6 @@
       <div class="problem-ide-left__scroll markdown-body">
         <div class="problem-content-container"><div class="problem-content" data-marker-enabled id="problemIdeProblemContent">
           {% include "partials/problem_ide_description.html" %}
-          <div id="content-aiAnalysis" class="problem_content" style="display:none;">
-            {% if not problemIdeCanSubmit %}
-            <div class="problem-ide-login-required-panel">
-              <p>登录后即可使用 AI 分析。</p>
-            </div>
-            {% else %}
-            <div class="problem-ide-ai-panel">
-              <div id="problemIdeAiSubmitMeta" class="problem-ide-ai-panel__meta">
-                <span class="problem-ide-ai-panel__meta-empty">请从「运行结果」或「历史提交」选择一条记录</span>
-              </div>
-              <div id="aiAnalysisQuotaBar" class="ai-analysis-quota-bar" hidden></div>
-              <div class="problem-ide-ai-panel__actions">
-                <button type="button" id="problemIdeAiSettingsToggle" class="problem-ide-ai-panel__settings-btn">设置</button>
-                <button type="button" id="problemIdeAiStartBtn" class="problem-ide-ai-panel__start-btn" disabled>开始AI分析</button>
-              </div>
-              <div id="problemIdeAiStreamRoot" class="record-ai-stream-panel record-ai-stream-panel--await-start">
-                <div class="record-ai-await-start"><span>选择提交后开始分析</span></div>
-              </div>
-            </div>
-            {% endif %}
-          </div>
         </div></div>
       </div>
       <div class="problem-ide-statement-toc-shell problem-ide-statement-toc-shell--empty" id="problemIdeStatementTocShell">
@@ -366,32 +345,4 @@
 <div id="problemIdeCooldownUpgradeToast" class="problem-ide-cooldown-toast" role="status" aria-live="polite" aria-hidden="true">
   <span class="problem-ide-cooldown-toast__text"><a href="/vip" class="problem-ide-cooldown-toast__link">升级会员</a>，可将运行与提交冷却时间缩短至 1 秒起</span>
 </div>
-{% if not (tdoc and tdoc.docType == model.document.TYPE_CONTEST) %}
-<div id="problemIdeAiSettingsModal" class="problem-ide-ai-modal problem-ide-ai-modal--hidden">
-  <div class="problem-ide-ai-modal__mask" data-role="close"></div>
-  <div class="problem-ide-ai-modal__dialog" role="dialog" aria-modal="true" aria-label="AI分析设置">
-    <div class="problem-ide-ai-modal__title">AI分析设置</div>
-    <label class="problem-ide-ai-panel__label">自定义 API Key（仅本地保存）</label>
-    <div id="problemIdeAiApiKeyHint" class="problem-ide-ai-panel__hint">留空使用平台 Key（有每日次数限制）；填写后走 BYOK，不扣平台额度</div>
-    <input id="problemIdeAiApiKey" class="problem-ide-ai-panel__input" type="password" placeholder="sk-..." autocomplete="off" />
-    <label class="problem-ide-ai-panel__label">分析模型</label>
-    <div id="problemIdeAiModelHint" class="problem-ide-ai-panel__hint">切到 Kimi/智谱/通义/豆包时需填写对应供应商 API Key</div>
-    <select id="problemIdeAiModelPreset" class="problem-ide-ai-panel__input">
-      <option value="deepseek-v4-flash">DeepSeek</option>
-      <option value="kimi">Kimi</option>
-      <option value="zhipu">智谱</option>
-      <option value="tongyi-qianwen">通义千问</option>
-      <option value="doubao">豆包</option>
-    </select>
-    <label class="problem-ide-ai-panel__label">模型名称（选填）</label>
-    <input id="problemIdeAiCustomModel" class="problem-ide-ai-panel__input" type="text" placeholder="留空使用默认模型" autocomplete="off" />
-    <label class="problem-ide-ai-panel__label">提示词模板</label>
-    <textarea id="problemIdeAiPromptTemplate" class="problem-ide-ai-panel__textarea" rows="10" placeholder="可用占位符：problem_content / submit_code / judge_result / problem_textsol"></textarea>
-    <div class="problem-ide-ai-modal__footer">
-      <button type="button" id="problemIdeAiSettingsCancel" class="problem-ide-ai-modal__btn">取消</button>
-      <button type="button" id="problemIdeAiSettingsSave" class="problem-ide-ai-modal__btn problem-ide-ai-modal__btn--primary">保存</button>
-    </div>
-  </div>
-</div>
-{% endif %}
 {% endblock %}

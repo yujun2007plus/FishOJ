@@ -169,6 +169,11 @@ export class AiAnalysisStreamHandler extends Handler {
             this.response.body = { error: '记录不存在' };
             return;
         }
+        const submitCode = String(rdoc.code || '').trim();
+        if (!submitCode) {
+            this.response.body = { error: '提交代码为空，无法分析' };
+            return;
+        }
         if (Number(rdoc.uid) !== uid && !this.user.hasPriv(PRIV.PRIV_EDIT_SYSTEM)) {
             this.response.body = { error: '无权分析该提交记录' };
             return;
@@ -346,7 +351,6 @@ export class AiAnalysisStreamHandler extends Handler {
         this.context.set('Cache-Control', 'no-cache');
         this.context.set('X-Accel-Buffering', 'no');
 
-        const submitCode = String(rdoc.code || '');
         (async () => {
             try {
                 let fullMd = '';

@@ -67,7 +67,8 @@ ProblemIde（宿主）
 FishOJ/
 ├── README.md                          # 本文件
 ├── docs/
-│   ├── 系统介绍.md                    # 给脚手架 / 计划书用的完整系统说明
+│   ├── 项目定位.md                    # 【总纲】产品定位、插件边界、新功能决策清单
+│   ├── 系统介绍.md                    # 各插件实现细节与历史计划书
 │   ├── problem-ide-learning-contract.md  # ProblemIde 与 AI 插件的公开协议
 │   ├── problem-restyle.md             # 题面改写约定
 │   └── 题面模板.md
@@ -200,7 +201,7 @@ hydrooj addon add <绝对路径>
 3. **不实现评测核心。** 提交/自测走 Hydro 官方接口（`problem_submit`、`record-conn` 等）。
 4. **AI 失败不影响做题。** 判题、提交不等待 AI 响应。
 
-详细架构与各插件职责见 [`docs/系统介绍.md`](docs/系统介绍.md)。
+详细架构与各插件职责见 [`docs/项目定位.md`](docs/项目定位.md)（**新功能请先读**）与 [`docs/系统介绍.md`](docs/系统介绍.md)。
 
 ---
 
@@ -240,7 +241,8 @@ hydrooj addon add <绝对路径>
 
 | 文档 | 用途 |
 |------|------|
-| [`docs/系统介绍.md`](docs/系统介绍.md) | 完整系统说明、各插件细节、给 AI 脚手架的约束 |
+| [`docs/项目定位.md`](docs/项目定位.md) | **总纲**：产品定位、插件边界、新功能决策、与 CodeFun 关系 |
+| [`docs/系统介绍.md`](docs/系统介绍.md) | 各插件实现细节、文件级说明 |
 | [`docs/problem-ide-learning-contract.md`](docs/problem-ide-learning-contract.md) | ProblemIde 与 AI 插件的事件与 UiContext 协议 |
 | [`docs/problem-restyle.md`](docs/problem-restyle.md) | 题面改写工作流 |
 | [`docs/题面模板.md`](docs/题面模板.md) | 题面 Markdown 模板 |

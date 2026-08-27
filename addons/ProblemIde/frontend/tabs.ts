@@ -1,11 +1,17 @@
 import { $ } from '@hydrooj/ui-default';
 
+function syncProblemTabLayout(type: string) {
+    document.getElementById('problemIdeRoot')
+        ?.classList.toggle('problem-ide-root--ai-analysis-tab', type === 'aiAnalysis');
+}
+
 export function showProblemTab($root: ReturnType<typeof $>, type: string) {
     $root.find('.section__tab-header-item').removeClass('tab--active');
     $root.find(`.section__tab-header-item[data-type="${type}"]`).addClass('tab--active');
     $root.find('.problem_content').hide();
     const el = document.getElementById(`content-${type}`);
     if (el) $(el).show();
+    syncProblemTabLayout(type);
     try {
         window.dispatchEvent(new CustomEvent('problem-ide:tab-changed', { detail: { type } }));
     } catch { /* ignore */ }

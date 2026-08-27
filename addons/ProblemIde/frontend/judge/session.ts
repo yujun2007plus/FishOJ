@@ -464,6 +464,129 @@ export function setupJudgeSession(opts: {
         }
     });
 
+    const HISTORY_PAGE_SIZE = 10;
+    let historyListPage = 0;
+    let historyListHasMore = true;
+    let historyListLoading = false;
+    const historyRdocByRid = new Map<string, any>();
+
+    const buildSubmissionsListUrl = (page: number): string => {
+        const raw = UiContext.getSubmissionsUrl!;
+        try {
+            const u = new URL(raw, window.location.href);
+            u.searchParams.set('page', String(page));
+            return `${u.pathname}${u.search}${u.hash}`;
+        } catch {
+            const sep = raw.includes('?') ? '&' : '?';
+            return `${raw}${sep}page=${encodeURIComponent(String(page))}`;
+        }
+    };
+
+    const renderHistoryTableHeadHtml = (): string => {
+        let h = '<thead><tr>';
+        h += '<th>提交时间</th><th>状态</th><th>分数</th><th>用时</th><th>内存</th><th>语言</th>';
+        if (ideCanSubmit) h += '<th>AI分析</th>';
+        h += '</tr></thead>';
+        return h;
+    };
+
+    const renderHistoryRowHtml = (r: any): string => {
+        const st = getRecordStatus(r);
+        const sn = SN[st] || `STATUS_${st}`;
+        const lb = LABEL[sn] || sn;
+        const ac = st === 1;
+        const t = r.judgeAt ? new Date(r.judgeAt).toLocaleString('zh-CN') : '-';
+        const done = DONE.has(st);
+        const rid = recordIdStr(r);
+        let row = `<tr class="history-row" data-rid="${escapeHtml(rid)}">`;
+        row += `<td>${escapeHtml(t)}</td>`;
+        row += `<td class="${ac ? 'result-ac' : 'result-err'}">${escapeHtml(lb)}</td>`;
+        row += `<td>${r.score ?? '-'}</td>`;
+        row += `<td>${r.time != null ? `${r.time}ms` : '-'}</td>`;
+        row += `<td>${r.memory != null ? `${(r.memory / 1024).toFixed(1)}MB` : '-'}</td>`;
+        row += `<td>${escapeHtml(langRange[r.lang] || r.lang || '-')}</td>`;
+        if (ideCanSubmit) {
+            row += `<td class="history-ai-cell">${done && rid ? HISTORY_AI_BTN(rid) : '-'}</td>`;
+        }
+        row += '</tr>';
+        return row;
+    };
+
+    const syncHistoryListFooter = (): void => {
+        if (!historyEl) return;
+        const loadMore = historyEl.querySelector('.history-load-more') as HTMLElement | null;
+        const end = historyEl.querySelector('.history-end') as HTMLElement | null;
+        const tbody = historyEl.querySelector('#problemIdeHistoryTbody');
+        if (loadMore) {
+            const showLoadingMore = historyListLoading && historyListPage >= 1;
+            loadMore.hidden = !showLoadingMore;
+        }
+        if (end) {
+            const hasRows = Boolean(tbody?.querySelector('tr'));
+            end.hidden = historyListHasMore || !hasRows || historyListLoading;
+        }
+    };
+
+    const appendHistoryPage = async (): Promise<void> => {
+        if (!historyEl || !UiContext.getSubmissionsUrl) return;
+        if (!historyListHasMore || historyListLoading) return;
+        historyListLoading = true;
+        syncHistoryListFooter();
+        try {
+            const nextPage = historyListPage + 1;
+            const res = await request.get(buildSubmissionsListUrl(nextPage)) as any;
+            const rdocs: any[] = res.rdocs || [];
+            historyListPage = nextPage;
+            historyListHasMore = rdocs.length >= HISTORY_PAGE_SIZE;
+            const tbody = historyEl.querySelector('#problemIdeHistoryTbody');
+            if (tbody) {
+                for (const r of rdocs) {
+                    historyRdocByRid.set(recordIdStr(r), r);
+                    tbody.insertAdjacentHTML('beforeend', renderHistoryRowHtml(r));
+                }
+            }
+        } catch {
+            Notification.error('加载更多失败');
+        } finally {
+            historyListLoading = false;
+            syncHistoryListFooter();
+        }
+    };
+
+    const ensureHistoryPanelInfiniteScroll = (): void => {
+        const panel = document.querySelector('.problem-ide-panel[data-panel="history"]') as HTMLElement | null;
+        if (!panel || panel.dataset.ideHistoryScroll === '1') return;
+        panel.dataset.ideHistoryScroll = '1';
+        panel.addEventListener('scroll', () => {
+            if (!historyListHasMore || historyListLoading) return;
+            const gap = panel.scrollHeight - panel.scrollTop - panel.clientHeight;
+            if (gap > 72) return;
+            void appendHistoryPage();
+        });
+    };
+
+    const ensureHistoryClickDelegation = (): void => {
+        if (!historyEl || historyEl.dataset.ideHistoryClick === '1') return;
+        historyEl.dataset.ideHistoryClick = '1';
+        historyEl.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            const aiBtn = target.closest('.history-ai-btn');
+            if (ideCanSubmit && aiBtn && historyEl!.contains(aiBtn)) {
+                e.stopPropagation();
+                e.preventDefault();
+                const rid = (aiBtn as HTMLElement).dataset.rid;
+                if (!rid) return;
+                const rdoc = historyRdocByRid.get(String(rid));
+                if (rdoc) emitJudge('problem-ide-ai-analysis-open', { rid, rdoc });
+                return;
+            }
+            const row = target.closest('.history-row') as HTMLElement | null;
+            if (!row || !historyEl!.contains(row)) return;
+            const rid = row.dataset.rid;
+            if (rid) window.open(getRecordDetailUrl(rid), '_blank', 'noopener,noreferrer');
+        });
+    };
+
     async function loadHistory() {
         if (!historyEl) return;
         if (ideLoginRequired) {
@@ -471,55 +594,37 @@ export function setupJudgeSession(opts: {
             return;
         }
         if (!UiContext.getSubmissionsUrl) return;
+        historyListLoading = true;
+        historyListPage = 0;
+        historyListHasMore = true;
+        historyRdocByRid.clear();
         historyEl.innerHTML = '<div class="history-loading">加载中…</div>';
         try {
-            const u = new URL(UiContext.getSubmissionsUrl, window.location.origin);
-            u.searchParams.set('page', '1');
-            const res = await request.get(u.pathname + u.search) as any;
+            const res = await request.get(buildSubmissionsListUrl(1)) as any;
             const rdocs: any[] = res.rdocs || [];
+            historyListPage = 1;
+            historyListHasMore = rdocs.length >= HISTORY_PAGE_SIZE;
             if (!rdocs.length) {
                 historyEl.innerHTML = '<div class="history-empty">暂无提交记录</div>';
+                historyListLoading = false;
                 return;
             }
-            const aiCol = ideCanSubmit ? '<th>AI分析</th>' : '';
-            let html = `<table class="history-table"><thead><tr><th>时间</th><th>结果</th><th>分数</th><th>语言</th>${aiCol}</tr></thead><tbody>`;
-            for (const r of rdocs) {
-                const st = getRecordStatus(r);
-                const lb = LABEL[SN[st] || ''] || String(st);
-                const t = r.judgeAt ? new Date(r.judgeAt).toLocaleString() : '-';
-                const rid = recordIdStr(r);
-                const href = rid ? getRecordDetailUrl(rid) : '';
-                const judged = DONE.has(st);
-                html += `<tr class="history-row" data-rid="${escapeHtml(rid)}"${href ? ` data-href="${escapeHtml(href)}"` : ''}>`;
-                html += `<td>${escapeHtml(t)}</td>`;
-                html += `<td class="${st === 1 ? 'result-ac' : 'result-err'}">${escapeHtml(lb)}</td>`;
-                html += `<td>${r.score != null ? escapeHtml(String(r.score)) : '-'}</td>`;
-                html += `<td>${escapeHtml(langRange[r.lang] || r.lang || '-')}</td>`;
-                if (ideCanSubmit) {
-                    html += `<td class="history-ai-cell">${judged && rid ? HISTORY_AI_BTN(rid) : '-'}</td>`;
-                }
-                html += '</tr>';
-            }
-            html += '</tbody></table>';
+            for (const r of rdocs) historyRdocByRid.set(recordIdStr(r), r);
+            const rows = rdocs.map(renderHistoryRowHtml).join('');
+            let html = '<table class="history-table">';
+            html += renderHistoryTableHeadHtml();
+            html += `<tbody id="problemIdeHistoryTbody">${rows}</tbody></table>`;
+            html += '<div class="history-footer">';
+            html += '<div class="history-load-more" hidden>加载中…</div>';
+            html += '<div class="history-end" hidden>没有更多记录了</div>';
+            html += '</div>';
             historyEl.innerHTML = html;
-            historyEl.querySelectorAll('.history-ai-btn').forEach((btn) => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const rid = (btn as HTMLElement).dataset.rid || '';
-                    if (!rid) return;
-                    const row = btn.closest('.history-row');
-                    const rdoc = rdocs.find((r) => recordIdStr(r) === rid) || { _id: rid };
-                    emitJudge('problem-ide-ai-analysis-open', { rid, rdoc });
-                });
-            });
-            historyEl.querySelectorAll('.history-row').forEach((row) => {
-                row.addEventListener('click', () => {
-                    const href = (row as HTMLElement).dataset.href;
-                    if (href) window.open(href, '_blank');
-                });
-            });
+            historyListLoading = false;
+            syncHistoryListFooter();
+            ensureHistoryClickDelegation();
+            ensureHistoryPanelInfiniteScroll();
         } catch (e) {
+            historyListLoading = false;
             historyEl.innerHTML = `<div class="history-empty">加载失败: ${escapeHtml(e instanceof Error ? e.message : String(e))}</div>`;
         }
     }

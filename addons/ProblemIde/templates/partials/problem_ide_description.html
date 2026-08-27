@@ -1,5 +1,5 @@
-{# ProblemPages 题面容器：.markdown-body，不用 Hydro .typo（300 字重） #}
-<div class="section__body markdown-body richmedia" data-fragment-id="problem-description">
+{# 与 CodeFun 一致：各语言题面包在 .problem_content#content-{k} 内，Tab 切换时隐藏；AI 分析同层 #}
+<div class="section__body show-hide-box-parent markdown-body richmedia" data-fragment-id="problem-description">
 {% if not pdoc.data.length and not pdoc.reference %}
 <blockquote class="warn">
   <p>{{ _('No {0} at current.').format(_("testdata")) }}</p>
@@ -20,10 +20,13 @@
   <p>{{ _('You cannot submit for this problem because the contest is ended. You can click "Open in Problem Set" to view this problem in normal mode.') }}</p>
 </blockquote>
 {% endif %}
+
+{% for k in pdoc.content|contentLang %}
+<div class="problem_content" id="content-{{ k }}"{% if not loop.first %} style="display:none"{% endif %}>
 {% include "partials/problem_ide_statement_h1.html" %}
-{% if not renderredContent %}
-{% set preferredLang = handler.request.query.lang or handler.user.viewLang or handler.session.viewLang %}
-{% set renderredContent = pdoc.content|content(preferredLang, pdoc.html) %}
-{% endif %}
-{{ renderredContent|safe }}
+{{ pdoc.content | content(k, false) | safe }}
+</div>
+{% endfor %}
+
+{% include "partials/problem_ide_ai_analysis_panel.html" %}
 </div>

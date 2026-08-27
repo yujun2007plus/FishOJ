@@ -1,44 +1,128 @@
-/* AiAnalysis 补充样式（主体已在 ProblemIde problem_ide.css） */
+/* AiAnalysis：与 codefun record-ai-ide-surface.css + reviewmodal 加载态对齐 */
 
 .record-ai-stream-panel {
+  width: 100%;
   min-height: 12em;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
 
+.record-ai-stream-html-root {
+  contain: layout paint;
+  min-height: 1em;
+}
+
+.record-ai-stream-panel.is-result {
+  scrollbar-gutter: stable;
+}
+
+.record-ai-stream-panel--await-start {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.record-ai-await-start {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.record-ai-await-start > span {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.record-ai-await-start__btn {
+  margin: 0;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(180deg, #ff9f43 0%, #ff7a00 100%);
+  box-shadow: 0 2px 8px rgba(255, 122, 0, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.record-ai-await-start__btn:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow: 0 4px 14px rgba(255, 122, 0, 0.45);
+}
+
+.record-ai-await-start__btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.record-ai-await-start__btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.theme--dark .record-ai-await-start__btn {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.theme--dark .record-ai-await-start > span {
+  color: #6e7681;
+}
+
+/* 流式开始前「AI思考中」 */
 .record-ai-stream-panel.is-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
+  min-height: 200px;
+  text-align: center;
   color: #8c8c8c;
 }
 
-.record-ai-await-start {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 10em;
-  color: #8c8c8c;
+.record-ai-stream-panel.is-loading > *:not(.spinner):not(.loading-text) {
+  display: none !important;
 }
 
-.record-ai-await-start__btn {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid #d0d7de;
-  background: #fff;
-  cursor: pointer;
-  font-weight: 600;
+.record-ai-stream-panel.is-loading .loading-text {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
 }
 
-.record-ai-await-start__btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+.record-ai-stream-panel .spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(0, 0, 0, 0.15);
+  border-top-color: #409eff;
+  border-radius: 50%;
+  animation: record-ai-spin 0.8s linear infinite;
+  flex: 0 0 auto;
 }
 
-.theme--dark .record-ai-await-start__btn {
-  background: #21262d;
-  border-color: #30363d;
-  color: #e6edf3;
+@keyframes record-ai-spin {
+  to { transform: rotate(360deg); }
+}
+
+.theme--dark .record-ai-stream-panel.is-loading {
+  color: #8b949e;
+}
+
+.theme--dark .record-ai-stream-panel .spinner {
+  border-color: rgba(255, 255, 255, 0.12);
+  border-top-color: #58a6ff;
+}
+
+.problem-ide-ai-panel #recordAiStreamRoot.record-ai-stream-panel--await-start {
+  min-height: 96px;
+  padding: 10px 12px;
+}
+
+.problem-ide-ai-panel .record-ai-await-start {
+  gap: 6px;
 }

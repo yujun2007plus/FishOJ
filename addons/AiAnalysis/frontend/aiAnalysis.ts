@@ -1,25 +1,26 @@
-import { Notification, request } from '@hydrooj/ui-default';
-import { formatRecordStatusLabelZh, formatRecordJudgeResultPromptText } from '../lib/judgeResultPrompt';
+import { request } from '@hydrooj/ui-default';
+import { formatRecordStatusLabelZh } from '../lib/judgeResultPrompt';
 import {
     DEFAULT_AI_MODEL,
-    AI_MODEL_PRESETS,
     defaultProblemIdeAiPromptTemplate,
-    readProblemIdeAiSettings,
-    writeProblemIdeAiSettings,
     recordAiStreamRequestOptionsFromSavedSettings,
-    type ProblemIdeAiSettings,
 } from '../lib/settings';
 import {
     RECORD_AI_PAUSE_OR_LEAVE_NON_REFUND_HINT_ZH,
     RECORD_AI_STREAM_MD_CLASS,
-    RECORD_AI_ANALYSIS_QUOTA_URL,
+    buildAiQuotaWalletBarHtml,
+    codeAiQuotaBarTailHtml,
+    codeAiQuotaExhaustedMessageHtml,
     ensureGithubMarkdownForRecordAi,
     fetchRecordAiAnalysisCache,
+    isAiQuotaExhaustedErrorText,
+    isAiQuotaWalletRef,
     parseAiAnalysisQuotaRef,
     renderRecordAiCachedAnalysisIntoStreamRoot,
     runRecordAiAnalysisStream,
     type AiAnalysisQuotaRef,
 } from '../lib/streamClient';
+import { getReviewModalStyles } from './reviewModalStyles';
 
 declare const UiContext: {
     aiAnalysis?: {
@@ -27,13 +28,10 @@ declare const UiContext: {
         streamUrl?: string;
         cacheUrl?: string;
         quotaUrl?: string;
-        canUseCustomApiKey?: boolean;
         quota?: AiAnalysisQuotaRef;
     };
-    ideShortCooldown?: boolean;
     problemId?: string;
     problemNumId?: number;
-    pdoc?: { content?: unknown; textSol?: unknown };
     getRecordDetailUrl?: string;
 };
 
@@ -82,6 +80,8 @@ function showProblemTab(type: string) {
     });
     const panel = document.getElementById(`content-${type}`);
     if (panel) panel.style.display = '';
+    document.getElementById('problemIdeRoot')
+        ?.classList.toggle('problem-ide-root--ai-analysis-tab', type === 'aiAnalysis');
     try {
         window.dispatchEvent(new CustomEvent('problem-ide:tab-changed', { detail: { type } }));
     } catch { /* ignore */ }
@@ -94,7 +94,7 @@ function getRecordDetailUrl(rid: string): string {
 
 function showEmptyAiPanel(metaEl: HTMLElement | null, streamRoot: HTMLElement | null) {
     if (metaEl) {
-        metaEl.innerHTML = '<span class="problem-ide-ai-panel__meta-empty">请从「运行结果」或「历史提交」选择一条记录，再点「开始AI分析」</span>';
+        metaEl.innerHTML = '<span class="problem-ide-ai-panel__meta-empty">请从「运行结果」或「历史提交」选择一条记录</span>';
     }
     if (streamRoot) {
         streamRoot.classList.add('record-ai-stream-panel--await-start');
@@ -103,127 +103,203 @@ function showEmptyAiPanel(metaEl: HTMLElement | null, streamRoot: HTMLElement | 
     }
 }
 
-const DONE = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+type IdeAiSessionSnap = {
+    rid: string;
+    rdoc: {
+        _id?: string;
+        status?: unknown;
+        score?: unknown;
+        time?: unknown;
+        memory?: unknown;
+        lang?: unknown;
+        judgeAt?: unknown;
+    };
+};
+
+type OpenAiAnalysisOpts = {
+    forceRefresh?: boolean;
+    switchTab?: boolean;
+    autoStartIfNoCache?: boolean;
+};
 
 export function initAiAnalysis() {
     const cfg = UiContext.aiAnalysis;
     if (!cfg?.enabled) return;
     if (document.getElementById('content-aiAnalysis') == null) return;
 
-    ensureGithubMarkdownForRecordAi();
-
     const pid = String(UiContext.problemId || UiContext.problemNumId || '');
     const langRange = window.__problemIdeLangRange || {};
-    const canUseCustomApiKey = Boolean(cfg.canUseCustomApiKey || UiContext.ideShortCooldown);
     let quotaRef: AiAnalysisQuotaRef | null = parseAiAnalysisQuotaRef(cfg.quota) || (
         cfg.quota ? { ...cfg.quota } as AiAnalysisQuotaRef : null
     );
 
     const aiMetaEl = document.getElementById('problemIdeAiSubmitMeta');
-    const aiSettingsToggleBtn = document.getElementById('problemIdeAiSettingsToggle') as HTMLButtonElement | null;
-    const aiSettingsModalEl = document.getElementById('problemIdeAiSettingsModal');
-    const aiSettingsSaveBtn = document.getElementById('problemIdeAiSettingsSave') as HTMLButtonElement | null;
-    const aiSettingsCancelBtn = document.getElementById('problemIdeAiSettingsCancel') as HTMLButtonElement | null;
-    const aiApiKeyInput = document.getElementById('problemIdeAiApiKey') as HTMLInputElement | null;
-    const aiApiKeyHint = document.getElementById('problemIdeAiApiKeyHint');
-    const aiModelHint = document.getElementById('problemIdeAiModelHint');
-    const aiModelPresetSelect = document.getElementById('problemIdeAiModelPreset') as HTMLSelectElement | null;
-    const aiCustomModelInput = document.getElementById('problemIdeAiCustomModel') as HTMLInputElement | null;
-    const aiPromptTemplateInput = document.getElementById('problemIdeAiPromptTemplate') as HTMLTextAreaElement | null;
-    const aiStartBtn = document.getElementById('problemIdeAiStartBtn') as HTMLButtonElement | null;
-    const aiStreamRoot = document.getElementById('problemIdeAiStreamRoot');
+    const aiRerunBtn = document.getElementById('problemIdeAiRerunBtn') as HTMLButtonElement | null;
+    let aiStreamRoot = document.getElementById('problemIdeAiStreamRoot') as HTMLElement | null;
     const submitResultAiBtn = document.getElementById('problemIdeSubmitResultAiBtn') as HTMLButtonElement | null;
     if (aiStreamRoot) aiStreamRoot.id = 'recordAiStreamRoot';
 
-    const DEFAULT_AI_PROMPT_TEMPLATE = defaultProblemIdeAiPromptTemplate();
+    const ensureRecordAiStylesInjected = () => {
+        if (document.getElementById('record-ai-reviewmodal-styles')) return;
+        const s = document.createElement('style');
+        s.id = 'record-ai-reviewmodal-styles';
+        s.textContent = getReviewModalStyles();
+        document.head.appendChild(s);
+        ensureGithubMarkdownForRecordAi();
+    };
 
-    const applySettingsToForm = async () => {
-        const s = await readProblemIdeAiSettings(canUseCustomApiKey, pid);
-        if (aiApiKeyInput) {
-            aiApiKeyInput.value = s.apiKey;
-            aiApiKeyInput.disabled = !canUseCustomApiKey;
-            if (!canUseCustomApiKey) aiApiKeyInput.placeholder = '仅会员和管理员可填写';
-        }
-        if (aiModelPresetSelect) {
-            aiModelPresetSelect.value = s.modelPreset;
-            aiModelPresetSelect.disabled = !canUseCustomApiKey;
-        }
-        if (aiCustomModelInput) {
-            aiCustomModelInput.value = s.customModel;
-            aiCustomModelInput.disabled = !canUseCustomApiKey;
-        }
-        if (aiPromptTemplateInput) aiPromptTemplateInput.value = s.promptTemplate;
-        if (aiApiKeyHint && !canUseCustomApiKey) {
-            aiApiKeyHint.textContent = '普通用户请留空使用官方 API Key（每天有次数限制）';
-        }
-        if (aiModelHint) {
-            aiModelHint.textContent = canUseCustomApiKey
-                ? '可先选择供应商；模型名称可选填'
-                : '普通用户不可设置模型，默认使用 DeepSeek';
+    const platformAiStreamOptions = () => recordAiStreamRequestOptionsFromSavedSettings({
+        apiKey: '',
+        modelPreset: DEFAULT_AI_MODEL,
+        customModel: '',
+        promptTemplate: defaultProblemIdeAiPromptTemplate(),
+    }, false);
+
+    const ideAiSessionKey = () => `problem_ide_ai_session_${pid}`;
+    const ideAiHtmlKey = () => `problem_ide_ai_html_${pid}`;
+
+    const persistIdeAiSession = (rid: string, rdoc: any, contentHtml?: string | null) => {
+        if (!pid || !rid) return;
+        try {
+            const snap: IdeAiSessionSnap = {
+                rid: String(rid),
+                rdoc: {
+                    _id: rdoc?._id != null ? String(rdoc._id) : String(rid),
+                    status: rdoc?.status,
+                    score: rdoc?.score,
+                    time: rdoc?.time,
+                    memory: rdoc?.memory,
+                    lang: rdoc?.lang,
+                    judgeAt: rdoc?.judgeAt,
+                },
+            };
+            sessionStorage.setItem(ideAiSessionKey(), JSON.stringify(snap));
+            if (typeof contentHtml === 'string' && contentHtml.trim()) {
+                sessionStorage.setItem(ideAiHtmlKey(), JSON.stringify({
+                    rid: String(rid),
+                    contentHtml,
+                    savedAt: Date.now(),
+                }));
+            }
+        } catch { /* ignore */ }
+    };
+
+    const readIdeAiSession = (): IdeAiSessionSnap | null => {
+        if (!pid) return null;
+        try {
+            const raw = sessionStorage.getItem(ideAiSessionKey());
+            if (!raw) return null;
+            const parsed = JSON.parse(raw) as IdeAiSessionSnap;
+            if (!parsed?.rid) return null;
+            return parsed;
+        } catch {
+            return null;
         }
     };
-    void applySettingsToForm();
+
+    const readIdeAiLocalHtml = (rid: string): string => {
+        if (!pid || !rid) return '';
+        try {
+            const raw = sessionStorage.getItem(ideAiHtmlKey());
+            if (!raw) return '';
+            const parsed = JSON.parse(raw) as { rid?: string; contentHtml?: string };
+            if (String(parsed?.rid || '') !== String(rid)) return '';
+            return typeof parsed.contentHtml === 'string' ? parsed.contentHtml : '';
+        } catch {
+            return '';
+        }
+    };
+
+    const applyQuotaFromApi = (payload: { aiQuota?: AiAnalysisQuotaRef | null }) => {
+        const parsed = parseAiAnalysisQuotaRef(payload?.aiQuota) || payload?.aiQuota;
+        if (parsed) quotaRef = parsed as AiAnalysisQuotaRef;
+    };
 
     const renderQuotaBar = () => {
         const barEl = document.getElementById('aiAnalysisQuotaBar');
         if (!barEl) return;
-        if (!quotaRef?.limited || quotaRef.unlimited) {
-            if (quotaRef?.unlimited) {
-                barEl.hidden = false;
-                barEl.innerHTML = '<div class="ai-analysis-quota-bar__inner">今日 AI：不限</div>';
-            } else {
-                barEl.hidden = true;
-            }
+        const ref = quotaRef;
+        if (!ref) {
+            barEl.hidden = true;
+            barEl.innerHTML = '';
+            return;
+        }
+        if (isAiQuotaWalletRef(ref)) {
+            barEl.hidden = false;
+            barEl.classList.toggle('ai-analysis-quota-bar--low', !ref.unlimited && ref.canUsePaidAnalysis === false);
+            barEl.innerHTML = buildAiQuotaWalletBarHtml(ref, { wrapClass: 'ai-analysis-quota-bar__inner' });
+            return;
+        }
+        if (!ref.limited) {
+            barEl.hidden = true;
+            barEl.innerHTML = '';
+            return;
+        }
+        if (ref.unlimited) {
+            barEl.hidden = false;
+            barEl.innerHTML = '<div class="ai-analysis-quota-bar__inner">今日 AI：不限</div>';
             return;
         }
         barEl.hidden = false;
-        barEl.innerHTML = `<div class="ai-analysis-quota-bar__inner">今日 AI：<span class="ai-analysis-quota-bar__num">${quotaRef.remaining}</span> / ${quotaRef.dailyLimit} 次，明日刷新</div>`;
+        barEl.classList.remove('ai-analysis-quota-bar--low');
+        const tail = codeAiQuotaBarTailHtml(ref.dailyLimit, { limitTiers: ref.limitTiers, quotaRef: ref });
+        barEl.innerHTML = `<div class="ai-analysis-quota-bar__inner">今日 AI：<span class="ai-analysis-quota-bar__num">${ref.remaining}</span> / ${ref.dailyLimit} 次${tail}</div>`;
     };
     renderQuotaBar();
 
-    const refreshQuota = async () => {
+    const refreshQuotaFromServer = async () => {
+        if (!pid) return;
         try {
-            const url = cfg.quotaUrl || RECORD_AI_ANALYSIS_QUOTA_URL;
-            const res = await request.get(url) as AiAnalysisQuotaRef;
-            const parsed = parseAiAnalysisQuotaRef(res) || res;
-            if (parsed) quotaRef = parsed as AiAnalysisQuotaRef;
+            const base = cfg.quotaUrl || '/api/problem/ide-ai-quota';
+            const sep = base.includes('?') ? '&' : '?';
+            const res = await request.get(`${base}${sep}pid=${encodeURIComponent(pid)}`) as {
+                error?: string;
+                aiQuota?: AiAnalysisQuotaRef | null;
+            };
+            if (res?.error) return;
+            if (res?.aiQuota && (res.aiQuota.limited || res.aiQuota.unlimited || res.aiQuota.source === 'ai_quota')) {
+                applyQuotaFromApi({ aiQuota: res.aiQuota });
+            } else {
+                quotaRef = null;
+            }
             renderQuotaBar();
         } catch { /* ignore */ }
     };
 
-    const closeModal = () => aiSettingsModalEl?.classList.add('problem-ide-ai-modal--hidden');
-    const openModal = () => {
-        void applySettingsToForm().then(() => {
-            aiSettingsModalEl?.classList.remove('problem-ide-ai-modal--hidden');
+    const showAiQuotaExhaustedInPanel = () => {
+        aiStreamRoot = document.getElementById('recordAiStreamRoot') as HTMLElement | null;
+        const html = codeAiQuotaExhaustedMessageHtml(quotaRef?.dailyLimit, {
+            limitTiers: quotaRef?.limitTiers,
+            quotaRef,
         });
+        if (aiStreamRoot) {
+            aiStreamRoot.classList.remove('is-result', 'record-ai-stream-panel--await-start');
+            aiStreamRoot.classList.add('is-loading');
+            aiStreamRoot.innerHTML = `<div class="loading-text problem-ide-ai-quota-msg" style="color:#cf1322;text-align:center;padding:16px;line-height:1.7;">${html}</div>`;
+        }
+        renderQuotaBar();
     };
-    aiSettingsToggleBtn?.addEventListener('click', openModal);
-    aiSettingsCancelBtn?.addEventListener('click', closeModal);
-    aiSettingsModalEl?.addEventListener('click', (ev) => {
-        if ((ev.target as HTMLElement)?.dataset?.role === 'close') closeModal();
-    });
-    aiSettingsSaveBtn?.addEventListener('click', async () => {
-        const selectedPreset = canUseCustomApiKey
-            ? (aiModelPresetSelect?.value || DEFAULT_AI_MODEL)
-            : DEFAULT_AI_MODEL;
-        const settings: ProblemIdeAiSettings = {
-            apiKey: canUseCustomApiKey ? (aiApiKeyInput?.value || '') : '',
-            promptTemplate: aiPromptTemplateInput?.value || DEFAULT_AI_PROMPT_TEMPLATE,
-            modelPreset: AI_MODEL_PRESETS.has(selectedPreset) ? selectedPreset : DEFAULT_AI_MODEL,
-            customModel: canUseCustomApiKey ? (aiCustomModelInput?.value || '') : '',
-        };
-        await writeProblemIdeAiSettings(settings, canUseCustomApiKey);
-        closeModal();
-        Notification.success('AI 设置已保存');
-    });
+
+    const isIdePaidAnalysisBlocked = (): boolean => {
+        const ref = quotaRef;
+        if (!ref) return false;
+        if (isAiQuotaWalletRef(ref)) {
+            if (ref.unlimited) return false;
+            return ref.canUsePaidAnalysis === false
+                || (ref.estimatedCostPoints != null
+                    && ref.balancePoints != null
+                    && Number(ref.balancePoints) < Number(ref.estimatedCostPoints))
+                || (ref.balancePoints != null && Number(ref.balancePoints) <= 0 && ref.estimatedCostPoints == null);
+        }
+        return !!ref.limited && !ref.unlimited && Number(ref.remaining) <= 0;
+    };
 
     let aiCurrentTarget: { rid: string; rdoc: any; code: string } | null = null;
     let lastSubmitRid: string | null = null;
     let lastSubmitRdoc: any = null;
     let aiIsStreaming = false;
     let aiStreamAbort: AbortController | null = null;
-    let aiEverCompleted = false;
-    let sessionGen = 0;
+    let aiAnalysisSessionGen = 0;
 
     window.addEventListener('beforeunload', (e: BeforeUnloadEvent) => {
         if (!aiIsStreaming) return;
@@ -231,16 +307,11 @@ export function initAiAnalysis() {
         e.returnValue = RECORD_AI_PAUSE_OR_LEAVE_NON_REFUND_HINT_ZH;
     });
 
-    const syncStartBtn = () => {
-        if (!aiStartBtn) return;
-        aiStartBtn.classList.remove('problem-ide-ai-panel__start-btn--abort');
-        if (!aiCurrentTarget) {
-            aiStartBtn.disabled = true;
-            aiStartBtn.textContent = '开始AI分析';
-            return;
-        }
-        aiStartBtn.disabled = false;
-        aiStartBtn.textContent = aiEverCompleted ? '重新AI分析' : '开始AI分析';
+    const syncAiRerunBtnUi = () => {
+        if (!aiRerunBtn) return;
+        const show = !!aiCurrentTarget && !aiIsStreaming;
+        aiRerunBtn.hidden = !show;
+        aiRerunBtn.disabled = !show;
     };
 
     const renderMeta = (rdoc: any, rid: string) => {
@@ -260,142 +331,167 @@ export function initAiAnalysis() {
         ].join('');
     };
 
-    const openAIAnalysis = async (ridRaw: string, rdoc: any) => {
-        if (!aiStartBtn || !aiStreamRoot) return;
-        const rid = normalizeRecordId(ridRaw || rdoc?._id);
-        if (!rid) {
-            Notification.error('无法识别提交记录，请从历史提交重试');
+    const startAiAnalysisStream = async () => {
+        aiStreamRoot = document.getElementById('recordAiStreamRoot') as HTMLElement | null;
+        if (!aiCurrentTarget || !aiStreamRoot) return;
+        if (aiIsStreaming) return;
+        if (isIdePaidAnalysisBlocked()) {
+            showAiQuotaExhaustedInPanel();
+            syncAiRerunBtnUi();
             return;
         }
-        document
-            .querySelector('#problemIdeProblemTabs .section__tab-header-item[data-type="aiAnalysis"]')
-            ?.removeAttribute('hidden');
-        showProblemTab('aiAnalysis');
-        sessionGen += 1;
-        aiStartBtn.disabled = true;
-        aiStartBtn.textContent = '加载中...';
-        aiStreamAbort?.abort();
-        aiIsStreaming = false;
-        aiCurrentTarget = null;
-        aiEverCompleted = false;
-        aiStreamRoot.classList.remove('is-result', 'is-loading');
-        aiStreamRoot.classList.add('record-ai-stream-panel--await-start');
-        aiStreamRoot.innerHTML = '<div class="record-ai-await-start"><span>正在读取提交代码...</span></div>';
-        renderMeta(rdoc, rid);
-        renderQuotaBar();
-        try {
-            const detail = await request.get(getRecordDetailUrl(rid)) as any;
-            const codeText = String(detail?.rdoc?.code || rdoc?.code || '');
-            aiCurrentTarget = { rid, rdoc: detail?.rdoc || rdoc, code: codeText };
-            syncStartBtn();
-            aiStreamRoot.innerHTML = '<div class="record-ai-await-start"><span>已选中提交记录，请点击上方「开始AI分析」</span></div>';
-        } catch (e) {
-            aiStartBtn.disabled = true;
-            aiStartBtn.textContent = '开始AI分析';
-            aiStreamRoot.innerHTML = `<p class="loading-text" style="color:#f5222d;text-align:center;padding:16px;">读取提交代码失败：${escapeHtml(e instanceof Error ? e.message : String(e))}</p>`;
-        }
-    };
-
-    aiStartBtn?.addEventListener('click', async () => {
-        if (!aiCurrentTarget || !aiStreamRoot || !aiStartBtn) return;
-        if (aiIsStreaming) {
-            if (!window.confirm(`${RECORD_AI_PAUSE_OR_LEAVE_NON_REFUND_HINT_ZH}\n\n确定暂停？`)) return;
-            aiStreamAbort?.abort();
-            return;
-        }
-        const settings = await readProblemIdeAiSettings(canUseCustomApiKey, pid);
-        const hasCustom = Boolean((settings.apiKey || '').trim());
-        if (!hasCustom && quotaRef?.limited && !quotaRef.unlimited && quotaRef.remaining <= 0) {
-            Notification.error(`今日 AI 次数已用完（每日 ${quotaRef.dailyLimit} 次），明日刷新。`);
-            return;
-        }
-        const cacheUrl = cfg.cacheUrl;
-        if (!aiEverCompleted && cacheUrl) {
-            const cached = await fetchRecordAiAnalysisCache(aiCurrentTarget.rid, cacheUrl);
-            if (cached.hasCache && cached.contentHtml?.trim()) {
-                aiStreamRoot.classList.remove('record-ai-stream-panel--await-start', 'is-loading');
-                aiStreamRoot.classList.add('is-result');
-                renderRecordAiCachedAnalysisIntoStreamRoot(aiStreamRoot, cached.contentHtml, {
-                    submitCode: aiCurrentTarget.code,
-                    language: aiCurrentTarget.rdoc?.lang,
-                });
-                aiEverCompleted = true;
-                syncStartBtn();
-                return;
-            }
-        }
-        aiStartBtn.textContent = '暂停';
-        aiStartBtn.title = `点击暂停。${RECORD_AI_PAUSE_OR_LEAVE_NON_REFUND_HINT_ZH}`;
-        aiStartBtn.classList.add('problem-ide-ai-panel__start-btn--abort');
+        const snap = window.FishOJProblemIde?.getSnapshot?.();
         aiIsStreaming = true;
-        const gen = sessionGen;
-        aiStreamRoot.classList.remove('record-ai-stream-panel--await-start');
-        aiStreamRoot.classList.add('is-result');
+        syncAiRerunBtnUi();
+        const streamSessionGen = aiAnalysisSessionGen;
+        aiStreamRoot.classList.remove('record-ai-stream-panel--await-start', 'is-result');
+        aiStreamRoot.classList.add('is-loading');
+        aiStreamRoot.innerHTML = '<span class="spinner" aria-hidden="true"></span><p class="loading-text">AI思考中，请稍候</p>';
         const liveId = 'recordAiStreamLive';
+        aiStreamRoot.classList.remove('is-loading');
+        aiStreamRoot.classList.add('is-result');
         aiStreamRoot.innerHTML = `<div id="${liveId}" class="markdown-body reviewmodal__ai-live ${RECORD_AI_STREAM_MD_CLASS}" style="min-height:4em;line-height:1.55;"></div>`;
         const liveEl = aiStreamRoot.querySelector(`#${liveId}`) as HTMLElement | null;
         if (!liveEl) {
             aiIsStreaming = false;
-            syncStartBtn();
+            syncAiRerunBtnUi();
             return;
         }
-        const snap = window.FishOJProblemIde?.getSnapshot?.();
         aiStreamAbort = new AbortController();
-        const outcome = await runRecordAiAnalysisStream(aiCurrentTarget.rid, liveEl, {
+        const streamOutcome = await runRecordAiAnalysisStream(aiCurrentTarget.rid, liveEl, {
             signal: aiStreamAbort.signal,
             streamUrl: cfg.streamUrl,
             cacheUrl: cfg.cacheUrl,
-            ...recordAiStreamRequestOptionsFromSavedSettings(settings, canUseCustomApiKey),
+            ...platformAiStreamOptions(),
             ideCode: snap?.code,
             submitCode: aiCurrentTarget.code,
-            submitLanguage: aiCurrentTarget.rdoc?.lang || snap?.language,
-            promptVars: {
-                problem_content: typeof UiContext.pdoc?.content === 'string'
-                    ? UiContext.pdoc.content
-                    : '',
-                submit_code: aiCurrentTarget.code,
-                judge_result: formatRecordJudgeResultPromptText(aiCurrentTarget.rdoc, {
-                    langLabel: langRange[aiCurrentTarget.rdoc?.lang] || aiCurrentTarget.rdoc?.lang || '-',
-                }),
-            },
+            submitLanguage: String(aiCurrentTarget.rdoc?.lang || snap?.language || ''),
             disableCache: true,
             autoScroll: false,
         });
         aiStreamAbort = null;
         aiIsStreaming = false;
-        if (gen !== sessionGen) return;
-        aiStartBtn.removeAttribute('title');
-        aiStartBtn.classList.remove('problem-ide-ai-panel__start-btn--abort');
-        if (outcome.ok) {
-            aiEverCompleted = true;
-            if (outcome.aiQuota) {
-                quotaRef = parseAiAnalysisQuotaRef(outcome.aiQuota) || outcome.aiQuota;
-                renderQuotaBar();
+        if (streamSessionGen !== aiAnalysisSessionGen) return;
+        syncAiRerunBtnUi();
+        if (streamOutcome.ok) {
+            if (streamOutcome.aiQuota) {
+                applyQuotaFromApi({ aiQuota: streamOutcome.aiQuota });
             } else {
-                void refreshQuota();
+                void refreshQuotaFromServer();
             }
-            syncStartBtn();
-            return;
-        }
-        if (!outcome.error) {
-            syncStartBtn();
-            void refreshQuota();
-            return;
-        }
-        if (quotaRef?.limited && /次数已用完|QUOTA/.test(outcome.error)) {
-            quotaRef = { ...quotaRef, remaining: 0 };
+            persistIdeAiSession(
+                aiCurrentTarget.rid,
+                aiCurrentTarget.rdoc,
+                streamOutcome.contentHtml || null,
+            );
             renderQuotaBar();
+            return;
         }
-        aiStreamRoot.innerHTML = `<p class="loading-text" style="color:#f5222d;text-align:center;padding:16px;">${escapeHtml(outcome.error)}</p>`;
-        syncStartBtn();
+        const errMsg = streamOutcome.error ?? '';
+        if (!errMsg) {
+            void refreshQuotaFromServer();
+            return;
+        }
+        if (quotaRef && (isAiQuotaExhaustedErrorText(errMsg) || /403/.test(errMsg))) {
+            if (isAiQuotaWalletRef(quotaRef)) {
+                const balMatch = errMsg.match(/当前余额\s*(\d+)\s*点/);
+                quotaRef = {
+                    ...quotaRef,
+                    canUsePaidAnalysis: false,
+                    remaining: balMatch ? Number(balMatch[1]) : 0,
+                    balancePoints: balMatch ? Number(balMatch[1]) : 0,
+                    reason: 'AI_QUOTA_INSUFFICIENT',
+                };
+            } else {
+                quotaRef = { ...quotaRef, remaining: 0 };
+            }
+            showAiQuotaExhaustedInPanel();
+            syncAiRerunBtnUi();
+            return;
+        }
+        aiStreamRoot.classList.remove('is-result');
+        aiStreamRoot.classList.add('is-loading');
+        aiStreamRoot.innerHTML = `<p class="loading-text" style="color:#f5222d;text-align:center;padding:16px;">${escapeHtml(errMsg)}</p>`;
+    };
+
+    const openAIAnalysis = async (ridRaw: string, rdoc: any, opts?: OpenAiAnalysisOpts) => {
+        aiStreamRoot = document.getElementById('recordAiStreamRoot') as HTMLElement | null;
+        if (!aiStreamRoot) return;
+        const rid = normalizeRecordId(ridRaw || rdoc?._id);
+        if (!rid) return;
+        const forceRefresh = !!opts?.forceRefresh;
+        const switchTab = opts?.switchTab !== false;
+        const autoStartIfNoCache = opts?.autoStartIfNoCache !== false;
+        ensureRecordAiStylesInjected();
+        renderQuotaBar();
+        document
+            .querySelector('#problemIdeProblemTabs .section__tab-header-item[data-type="aiAnalysis"]')
+            ?.removeAttribute('hidden');
+        if (switchTab) showProblemTab('aiAnalysis');
+        aiAnalysisSessionGen += 1;
+        aiStreamAbort?.abort();
+        aiIsStreaming = false;
+        aiCurrentTarget = null;
+        syncAiRerunBtnUi();
+        aiStreamRoot.classList.remove('is-result', 'is-loading');
+        aiStreamRoot.classList.add('record-ai-stream-panel--await-start');
+        aiStreamRoot.innerHTML = '<div class="record-ai-await-start"><span>正在读取提交代码...</span></div>';
+        renderMeta(rdoc, rid);
+        persistIdeAiSession(rid, rdoc);
+        try {
+            const cacheUrl = cfg.cacheUrl;
+            const [detail, cachePeek] = await Promise.all([
+                request.get(getRecordDetailUrl(rid)) as Promise<any>,
+                forceRefresh || !cacheUrl
+                    ? Promise.resolve({ hasCache: false as const })
+                    : fetchRecordAiAnalysisCache(rid, cacheUrl),
+            ]);
+            const mergedRdoc = detail?.rdoc ? { ...rdoc, ...detail.rdoc } : rdoc;
+            const codeText = String(detail?.rdoc?.code || '');
+            aiCurrentTarget = { rid, rdoc: mergedRdoc, code: codeText };
+            renderMeta(mergedRdoc, rid);
+            persistIdeAiSession(rid, mergedRdoc);
+
+            if (!forceRefresh) {
+                const cachedHtml = cachePeek.hasCache && cachePeek.contentHtml?.trim()
+                    ? cachePeek.contentHtml
+                    : readIdeAiLocalHtml(rid);
+                if (cachedHtml?.trim()) {
+                    renderRecordAiCachedAnalysisIntoStreamRoot(aiStreamRoot, cachedHtml, {
+                        submitCode: codeText,
+                        language: String(mergedRdoc?.lang || ''),
+                    });
+                    persistIdeAiSession(rid, mergedRdoc, cachedHtml);
+                    syncAiRerunBtnUi();
+                    return;
+                }
+                if (!autoStartIfNoCache) {
+                    aiStreamRoot.classList.remove('is-loading', 'is-result');
+                    aiStreamRoot.classList.add('record-ai-stream-panel--await-start');
+                    aiStreamRoot.innerHTML = '<div class="record-ai-await-start"><span>暂无已保存的分析，可点击右上角「重新AI分析」</span></div>';
+                    syncAiRerunBtnUi();
+                    return;
+                }
+            }
+            await startAiAnalysisStream();
+            syncAiRerunBtnUi();
+        } catch (e) {
+            aiStreamRoot.innerHTML = `<p class="loading-text" style="color:#f5222d;text-align:center;padding:16px;">读取提交代码失败：${escapeHtml(e instanceof Error ? e.message : String(e))}</p>`;
+            syncAiRerunBtnUi();
+        }
+    };
+
+    aiRerunBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!aiCurrentTarget || aiIsStreaming) return;
+        void openAIAnalysis(aiCurrentTarget.rid, aiCurrentTarget.rdoc, { forceRefresh: true });
     });
 
-    /** URL ?tab=aiAnalysis&rid= */
     const bootFromUrl = () => {
         const usp = new URLSearchParams(window.location.search);
-        if (usp.get('tab') !== 'aiAnalysis') return;
+        if (usp.get('tab') !== 'aiAnalysis') return false;
         const rid = String(usp.get('rid') || '').trim();
-        if (!rid) return;
+        if (!rid) return false;
         usp.delete('tab');
         usp.delete('rid');
         const q = usp.toString();
@@ -403,11 +499,27 @@ export function initAiAnalysis() {
         void (async () => {
             try {
                 const detail = await request.get(getRecordDetailUrl(rid)) as any;
-                if (detail?.rdoc) await openAIAnalysis(rid, detail.rdoc);
+                if (detail?.rdoc) await openAIAnalysis(rid, detail.rdoc, { switchTab: true });
             } catch { /* ignore */ }
         })();
+        return true;
     };
-    bootFromUrl();
+
+    const bootFromSession = () => {
+        const session = readIdeAiSession();
+        if (!session?.rid) return;
+        const activeTab = document.querySelector('#problemIdeProblemTabs .section__tab-header-item.tab--active') as HTMLElement | null;
+        const onAiTab = activeTab?.getAttribute('data-type') === 'aiAnalysis';
+        void openAIAnalysis(session.rid, session.rdoc || {}, {
+            forceRefresh: false,
+            switchTab: onAiTab,
+            autoStartIfNoCache: false,
+        });
+    };
+
+    if (!bootFromUrl()) {
+        bootFromSession();
+    }
 
     document.addEventListener(AI_ANALYSIS_OPEN, ((ev: Event) => {
         const d = (ev as CustomEvent<{ rid?: string; rdoc?: any }>).detail || {};
@@ -438,13 +550,12 @@ export function initAiAnalysis() {
         if (type !== 'aiAnalysis') return;
         if (aiCurrentTarget) return;
         showEmptyAiPanel(aiMetaEl, aiStreamRoot);
-        syncStartBtn();
+        syncAiRerunBtnUi();
     }) as EventListener);
 
     showEmptyAiPanel(aiMetaEl, aiStreamRoot);
-    syncStartBtn();
+    syncAiRerunBtnUi();
 
-    // exam mode：隐藏 AI tab
     const syncExam = () => {
         const root = document.getElementById('problemIdeRoot');
         const exam = root?.classList.contains('problem-ide-root--exam');
@@ -457,6 +568,4 @@ export function initAiAnalysis() {
     if (rootEl) {
         new MutationObserver(syncExam).observe(rootEl, { attributes: true, attributeFilter: ['class'] });
     }
-
-    void DONE;
 }
