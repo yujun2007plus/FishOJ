@@ -151,7 +151,8 @@ npm test
 
 ## 部署到服务器
 
-**换新机器（导出 Mongo / `.hydro` / 密钥、新机安装与冒烟）** 见 [`docs/换机迁移.md`](docs/换机迁移.md)，脚本在 `server-config/migrate/`。
+**空机器上先装官方 Hydro** 见 [`docs/阿里云全新部署.md`](docs/阿里云全新部署.md)（不要 git clone hydro-dev/Hydro）。  
+**换新机器（导出 Mongo / `.hydro` / 密钥、新机安装与冒烟）** 见 [`docs/系统部署.md`](docs/系统部署.md) 第 11 节，脚本在 `server-config/migrate/`。
 
 当前线上插件目录：`/root/.hydro/addons/`，清单：`/root/.hydro/addon.json`。
 
@@ -246,7 +247,8 @@ hydrooj addon add <绝对路径>
 
 | 文档 | 用途 |
 |------|------|
-| [`docs/换机迁移.md`](docs/换机迁移.md) | **换服务器**：导出/导入、密钥、冒烟、切流量 |
+| [`docs/系统部署.md`](docs/系统部署.md) | 新机逐步安装、导入旧机数据、导入题包 |
+| [`docs/阿里云全新部署.md`](docs/阿里云全新部署.md) | 新 ECS 上官方一键安装 Hydro |
 | [`docs/系统介绍.md`](docs/系统介绍.md) | 各插件实现细节、文件级说明 |
 | [`docs/problem-ide-learning-contract.md`](docs/problem-ide-learning-contract.md) | ProblemIde 与 AI 插件的事件与 UiContext 协议 |
 | [`docs/problem-restyle.md`](docs/problem-restyle.md) | 题面改写工作流 |

@@ -1,6 +1,12 @@
 import './github-markdown.min.css';
 import './problem_ide.css';
 import './problem_ide_markdown.css';
+
+if (typeof document !== 'undefined') {
+    document.documentElement.classList.remove('is-loading');
+    document.documentElement.classList.add('is-loaded');
+}
+
 import { $, addPage, NamedPage } from '@hydrooj/ui-default';
 import { initAlgTagToggle } from './algTags';
 import { setupPretestCases } from './cases';

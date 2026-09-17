@@ -2,6 +2,18 @@ import { Notification } from '@hydrooj/ui-default';
 import { MAX_CASES } from './constants';
 import type { TestCase } from './constants';
 
+function getVisibleStatementRoot(): HTMLElement | null {
+    const active = document.querySelector('#problemIdeProblemTabs .section__tab-header-item.tab--active') as HTMLElement | null;
+    const type = active?.getAttribute('data-type') || '';
+    if (type && type !== 'aiAnalysis' && type !== 'textSol') {
+        const panel = document.getElementById(`content-${type}`);
+        if (panel) return panel;
+    }
+    return document.getElementById('content-zh')
+        || document.getElementById('content-en')
+        || document.getElementById('problemIdeProblemContent');
+}
+
 export function extractFencePairsFromProblemRoot(root: HTMLElement): TestCase[] {
     const blocks = [...root.querySelectorAll('pre')].map((pre) => {
         const t = (pre.textContent || '').replace(/\r\n/g, '\n').replace(/\n$/, '');
@@ -72,7 +84,7 @@ export function setupPretestCases(opts: {
         saveCases();
     });
     document.getElementById('problemIdeCaseFillSamples')?.addEventListener('click', () => {
-        const root = document.getElementById('content-ZhContent') || document.getElementById('problemIdeProblemContent');
+        const root = getVisibleStatementRoot();
         const pairs = root ? extractFencePairsFromProblemRoot(root) : [];
         if (!pairs.length) {
             Notification.info('题面中未识别到样例');

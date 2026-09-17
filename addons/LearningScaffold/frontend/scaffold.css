@@ -14,11 +14,12 @@
 }
 .fish-scaffold-modal__card {
   position: relative;
-  width: min(520px, calc(100vw - 32px));
+  width: min(560px, calc(100vw - 32px));
   background: #fff;
-  border-radius: 16px;
-  padding: 22px 22px 18px;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.22);
+  border-radius: 18px;
+  padding: 24px 24px 20px;
+  box-shadow: 0 20px 60px rgba(11, 36, 71, 0.28);
+  border: 1px solid rgba(255, 196, 94, 0.35);
 }
 .theme--dark .fish-scaffold-modal__card {
   background: #1e1e1e;
@@ -26,8 +27,9 @@
 }
 .fish-scaffold-modal__title {
   margin: 0 0 6px;
-  font-size: 20px;
-  font-weight: 650;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b2447;
 }
 .fish-scaffold-modal__sub {
   margin: 0 0 16px;
@@ -47,15 +49,22 @@
   padding: 12px 14px;
   cursor: pointer;
 }
-.fish-scaffold-opt:hover { border-color: #1890ff; background: #f0f7ff; }
+.fish-scaffold-opt:hover { border-color: #2f6bff; background: #f0f5ff; }
+.fish-scaffold-opt--selected,
+.fish-scaffold-opt--selected:hover {
+  border-color: #ffc45e;
+  background: linear-gradient(135deg, #fff9ed 0%, #fff4e0 100%);
+  box-shadow: 0 0 0 2px rgba(255, 196, 94, 0.35);
+}
 .theme--dark .fish-scaffold-opt {
   background: #252526;
   border-color: #3c3c3c;
   color: inherit;
 }
 .fish-scaffold-opt__emoji { font-size: 22px; line-height: 1.2; }
-.fish-scaffold-opt__title { font-weight: 650; }
+.fish-scaffold-opt__title { font-weight: 700; color: #0b2447; }
 .fish-scaffold-opt__desc { font-size: 12px; color: #64748b; margin-top: 2px; }
+.fish-scaffold-opt:hover .fish-scaffold-opt__title { color: #2f6bff; }
 .fish-scaffold-diff {
   position: fixed;
   inset: 0;

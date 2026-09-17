@@ -22,19 +22,20 @@ declare global {
     }
 }
 
-declare const UiContext: {
-    learning?: {
-        scaffoldEnabled?: boolean;
-        scaffold?: {
-            pid: string;
-            hasChoice?: boolean;
-            mode?: number | null;
-            selectUrl?: string;
-        };
-    };
-};
-
 const MODE_KEY = (pid: string) => `fish_scaffold_mode_${pid}`;
+
+function getLearningConfig() {
+    const ctx = (window as any).UiContext;
+    if (!ctx) return null;
+    if (typeof ctx === 'string') {
+        try {
+            return JSON.parse(ctx).learning;
+        } catch {
+            return null;
+        }
+    }
+    return ctx.learning;
+}
 
 function applyCode(code: string, force = false) {
     document.dispatchEvent(new CustomEvent('problem-ide-apply-code', {
@@ -51,7 +52,7 @@ function hasHostCode() {
 }
 
 export function initLearningScaffold() {
-    const cfg = UiContext.learning;
+    const cfg = getLearningConfig();
     if (!cfg?.scaffoldEnabled || !cfg.scaffold?.pid) return;
 
     const pid = cfg.scaffold.pid;
@@ -161,28 +162,44 @@ export function initLearningScaffold() {
         diff?.removeAttribute('hidden');
     }) as EventListener);
 
+    const scaffoldBtn = document.getElementById('problemIdeScaffoldBtn');
+    const openModal = () => {
+        modal?.removeAttribute('hidden');
+        modal?.querySelectorAll('.fish-scaffold-opt').forEach((opt) => {
+            opt.classList.remove('fish-scaffold-opt--selected');
+            const mode = Number((opt as HTMLElement).dataset.mode);
+            if (String(localStorage.getItem(MODE_KEY(pid))) === String(mode)) {
+                opt.classList.add('fish-scaffold-opt--selected');
+            }
+        });
+    };
+    if (scaffoldBtn) {
+        scaffoldBtn.removeAttribute('hidden');
+        scaffoldBtn.addEventListener('click', openModal);
+    } else {
+        const resetBtn = document.getElementById('problemIdeResetCodeBtn');
+        if (resetBtn?.parentElement) {
+            const changeBtn = document.createElement('button');
+            changeBtn.type = 'button';
+            changeBtn.className = 'problem-ide-toolbar__btn';
+            changeBtn.textContent = '学习方式';
+            changeBtn.title = '重新选择这次怎么挑战';
+            changeBtn.addEventListener('click', openModal);
+            resetBtn.insertAdjacentElement('afterend', changeBtn);
+        }
+    }
+
     const start = () => {
         if (alreadyChosen) return;
-        modal?.removeAttribute('hidden');
+        openModal();
     };
-
-    const resetBtn = document.getElementById('problemIdeResetCodeBtn');
-    if (resetBtn?.parentElement) {
-        const changeBtn = document.createElement('button');
-        changeBtn.type = 'button';
-        changeBtn.className = 'problem-ide-toolbar__btn';
-        changeBtn.textContent = '学习方式';
-        changeBtn.title = '重新选择这次怎么挑战';
-        changeBtn.addEventListener('click', () => modal?.removeAttribute('hidden'));
-        resetBtn.insertAdjacentElement('afterend', changeBtn);
-    }
 
     if (document.getElementById('problemIdeMonaco')) {
         const onReady = () => {
             document.removeEventListener('problem-ide-ready', onReady);
-            window.setTimeout(start, 200);
+            window.setTimeout(start, 300);
         };
         document.addEventListener('problem-ide-ready', onReady);
-        window.setTimeout(start, 1200);
+        window.setTimeout(start, 1400);
     }
 }
