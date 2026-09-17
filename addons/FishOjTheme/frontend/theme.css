@@ -93,6 +93,11 @@
   color: #f5f7ff !important;
 }
 
+.nav__item,
+.nav .nav__item--round {
+  color: #fff !important;
+}
+
 .nav__item.nav--active {
   color: var(--fishoj-gold) !important;
   box-shadow: inset 0 -3px 0 var(--fishoj-gold) !important;
