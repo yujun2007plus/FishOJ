@@ -1,6 +1,7 @@
 import { Context } from 'hydrooj';
+import { DiscussionCreateAliasHandler } from './handler/discussionCreateAlias';
 
-// FishOjTheme 插件：仅提供全局前端主题样式（深海鎏金），不挂载任何后端逻辑。
 export function apply(ctx: Context) {
-    // 全局样式由 frontend/theme.page.ts 引入，构建期注入整站。
+    // /discuss/create 会被官方 /discuss/:did 吃掉并 ValidationError，必须先注册静态别名。
+    ctx.Route('fishoj_discussion_create_alias', '/discuss/create', DiscussionCreateAliasHandler);
 }

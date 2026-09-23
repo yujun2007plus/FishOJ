@@ -39,15 +39,46 @@ function findEmptyState(): HTMLElement | null {
     return null;
 }
 
+const DISCUSS_TYPES = 'node|problem|contest|training|homework';
+
+function escapeHtml(s: string): string {
+    return s.replace(/[&<>"']/g, (ch) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+    }[ch] || ch));
+}
+
+function domainPrefix(): string {
+    return location.pathname.match(/^(\/d\/[^/]+)/)?.[1] || '';
+}
+
+function isBrokenCreatePath(path: string): boolean {
+    return /(?:^|\/)discuss\/create\/?$/.test(path.split(/[?#]/)[0]);
+}
+
+function createUrl(type: string, name: string): string {
+    return `${domainPrefix()}/discuss/${type}/${encodeURIComponent(name)}/create`;
+}
+
+function nodeFromPath(): { type: string; name: string } | null {
+    const p = location.pathname.replace(/^\/d\/[^/]+/, '');
+    const m = new RegExp(`^/discuss/(${DISCUSS_TYPES})/([^/]+)(?:/|$)`).exec(p);
+    if (!m || m[2] === 'create') return null;
+    return { type: m[1], name: decodeURIComponent(m[2]) };
+}
+
 /** 收集页面上的讨论节点（来自「讨论节点」组件里的链接），返回 [id, 显示名]
- *  只取以 /discuss/node/<id> 结尾的链接，排除我们自己生成的 /create 链接 */
+ *  只取以 /discuss/node/<id> 结尾的链接，排除 /create */
 function nodeQuickLinks(): Array<[string, string]> {
     const out: Array<[string, string]> = [];
     const as = Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href*="/discuss/node/"]'));
     for (const a of as) {
         const href = (a.getAttribute('href') || '').split(/[?#]/)[0];
-        const m = /\/discuss\/node\/([^/]+)$/.exec(href);
-        if (!m) continue;
+        const m = /\/discuss\/node\/([^/]+)\/?$/.exec(href);
+        if (!m || m[1] === 'create') continue;
         const id = decodeURIComponent(m[1]);
         if (out.some(([i]) => i === id)) continue;
         out.push([id, (a.textContent || '').trim() || id]);
@@ -55,14 +86,25 @@ function nodeQuickLinks(): Array<[string, string]> {
     return out;
 }
 
-/** 解析「创建讨论」的合法地址。
- *  Hydro 只认 /discuss/node/<节点>/create；
- *  直接访问 /discuss/create 会报 ValidationError（缺 did 字段）—— 之前 404 就是这个原因。 */
+/** Hydro 只认 /discuss/:type/:name/create；/discuss/create 会被当成帖子 id。 */
 function resolveCreateUrl(): string | null {
-    const nodeId = /^\/discuss\/node\/([^/]+)/.exec(location.pathname)?.[1];
-    if (nodeId) return `/discuss/node/${nodeId}/create`;
+    const cur = nodeFromPath();
+    if (cur) return createUrl(cur.type, cur.name);
     const quick = nodeQuickLinks();
-    return quick.length ? `/discuss/node/${quick[0][0]}/create` : null;
+    return quick.length ? createUrl('node', quick[0][0]) : null;
+}
+
+function rewriteBrokenCreateLinks(): void {
+    const fallback = resolveCreateUrl();
+    document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((a) => {
+        const href = a.getAttribute('href') || '';
+        if (!isBrokenCreatePath(href)) return;
+        if (fallback) a.setAttribute('href', fallback);
+        else {
+            a.setAttribute('href', `${domainPrefix()}/discuss`);
+            a.classList.add('disabled');
+        }
+    });
 }
 
 /** ① 空状态三步引导 */
@@ -125,16 +167,15 @@ function enhanceCreateCard(): void {
         const sections = document.querySelectorAll<HTMLElement>('body.page--discussion_main .section');
         container = sections[sections.length - 1] || side;
     }
-    const nodeId = /^\/discuss\/node\/([^/]+)/.exec(location.pathname)?.[1];
+    const cur = nodeFromPath();
     const quick = nodeQuickLinks();
     let action: string;
-    if (nodeId) {
-        action = `<a class="fish-create-card__btn" href="/discuss/node/${nodeId}/create">开始创建 →</a>`;
+    if (cur) {
+        action = `<a class="fish-create-card__btn" href="${createUrl(cur.type, cur.name)}">开始创建 →</a>`;
     } else if (quick.length) {
-        // 主讨论页没有具体节点：直接列出各节点的快捷创建入口（避免 /discuss/create 报错）
         action = `<div class="fish-create-chips">${quick
             .slice(0, 6)
-            .map(([id, name]) => `<a class="fish-create-chip" href="/discuss/node/${id}/create">在「${name}」下创建</a>`)
+            .map(([id, name]) => `<a class="fish-create-chip" href="${createUrl('node', id)}">在「${escapeHtml(name)}」下创建</a>`)
             .join('')}</div>`;
     } else {
         action = `<p class="fish-create-card__desc">还没有讨论节点，请管理员先创建一个。</p>`;
@@ -198,6 +239,7 @@ function enhanceListAndSort(): void {
 
 function runDiscussionEnhance(): void {
     try {
+        rewriteBrokenCreateLinks();
         enhanceEmptyState();
         enhanceCreateCard();
         enhanceNodes();

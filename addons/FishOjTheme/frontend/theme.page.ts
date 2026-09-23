@@ -23,6 +23,23 @@ import './tags_sidebar';
 if (typeof document !== 'undefined') {
     document.documentElement.classList.remove('is-loading');
     document.documentElement.classList.add('is-loaded');
+    // /discuss/create 会被官方当成帖子 id，点到即 ValidationError
+    document.addEventListener('click', (ev) => {
+        const a = (ev.target as Element | null)?.closest?.('a');
+        if (!a) return;
+        const path = (a.getAttribute('href') || '').split(/[?#]/)[0];
+        if (!/(?:^|\/)discuss\/create\/?$/.test(path)) return;
+        const prefix = location.pathname.match(/^(\/d\/[^/]+)/)?.[1] || '';
+        const node = document.querySelector<HTMLAnchorElement>('a[href*="/discuss/node/"]');
+        const href = node?.getAttribute('href') || '';
+        const m = /\/discuss\/node\/([^/]+)\/?$/.exec(href.split(/[?#]/)[0]);
+        ev.preventDefault();
+        if (m && m[1] !== 'create') {
+            window.location.href = `${prefix}/discuss/node/${encodeURIComponent(decodeURIComponent(m[1]))}/create`;
+            return;
+        }
+        window.location.href = `${prefix}/discuss`;
+    }, true);
 }
 
 // 全局 AI 悬浮入口（小方块 → 中等浮窗），全站可见
