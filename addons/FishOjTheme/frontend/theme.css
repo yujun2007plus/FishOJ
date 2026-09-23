@@ -51,12 +51,18 @@
   border-bottom: 1px solid rgba(255, 196, 94, 0.35) !important;
 }
 
+.nav__list--main .nav__list-item:first-child {
+  margin-right: 8px;
+  padding-right: 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+}
+
 .nav__logo-link {
   display: inline-flex;
   align-items: center;
   height: 100%;
   text-decoration: none !important;
-  padding: 0 4px 0 0;
+  padding: 0 8px 0 0;
 }
 
 .nav__logo,
