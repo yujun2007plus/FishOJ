@@ -16,10 +16,10 @@ const HOT_THRESHOLD = 30;
 
 // 赛制 → 显示文案（与预览页一致）
 const RULE_LABEL: Record<string, string> = {
-  acm: '🏆 XCPC / ACM',
-  oi: '📘 OI 赛制',
-  ioi: '🌿 IOI 赛制',
-  homework: '📝 作业赛',
+  acm: 'ACM',
+  oi: 'OI',
+  ioi: 'IOI',
+  homework: '作业',
 };
 
 interface LiveItem {

@@ -96,15 +96,14 @@ body.page--discussion_main .empty-line {
   width: 100% !important;
   box-sizing: border-box !important;
   float: none !important;
-  margin: 22px auto 0 !important;
-  max-width: 760px !important;
+  margin: 16px auto 0 !important;
+  max-width: 420px !important;
   background: var(--fishoj-surface) !important;
-  border: 2px dashed var(--fishoj-gold-soft-border) !important;
+  border: 1px solid var(--fishoj-border) !important;
   border-radius: var(--fishoj-radius-lg) !important;
-  padding: 40px 30px 32px !important;
+  padding: 24px 20px !important;
   text-align: center !important;
   position: relative !important;
-  box-shadow: var(--fishoj-shadow-card) !important;
 }
 .fish-guide-bubble {
   width: 84px; height: 84px !important;

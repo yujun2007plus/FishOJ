@@ -11,17 +11,6 @@
 
 const FISH_DISCUSS_FLAG = 'data-fish-discuss';
 
-/** 依据节点名称挑一个彩色图标 */
-function pickNodeIcon(name: string): string {
-    const n = name || '';
-    if (/题解|题|解|代码|ac\b|acm/i.test(n)) return '📘';
-    if (/求助|问|帮|wa|bug|错误|错/i.test(n)) return '🙋';
-    if (/比赛|赛|contest|复盘/i.test(n)) return '🏆';
-    if (/公告|通知|announce|站务/i.test(n)) return '📢';
-    if (/灌水|闲聊|水|闲|摸鱼|日常/i.test(n)) return '☕';
-    return '💬';
-}
-
 /** 找到空状态占位（Hydro 的 .nothing 组件或中文文案） */
 function findEmptyState(): HTMLElement | null {
     const byClass = document.querySelector<HTMLElement>(
@@ -119,38 +108,11 @@ function enhanceEmptyState(): void {
     const guide = document.createElement('div');
     guide.className = 'fish-discuss-guide';
     guide.innerHTML = `
-        <div class="fish-guide-bubble">💬</div>
-        <h3 class="fish-guide-title">讨论区还是一片深海静水</h3>
-        <p class="fish-guide-sub">发第一条讨论，让这里热闹起来！按下面三步走就行：</p>
-        <div class="fish-guide-steps">
-            <div class="fish-step">
-                <span class="fish-step-n">1</span>
-                <div class="fish-step-ic">🏗</div>
-                <b class="fish-step-title">管理员建节点</b>
-                <span class="fish-step-desc">讨论节点需由管理员在后台创建，分类如：题解分享、求助、公告、灌水</span>
-                <span class="fish-step-go fish-step-go--muted">节点标识建议用英文，如 solutions</span>
-            </div>
-            <div class="fish-step">
-                <span class="fish-step-n">2</span>
-                <div class="fish-step-ic">✍️</div>
-                <b class="fish-step-title">点击「创建讨论」</b>
-                <span class="fish-step-desc">选一个节点，写好标题和内容，支持 Markdown</span>
-                ${createUrl
-                    ? `<a class="fish-step-go" href="${createUrl}">前往创建 →</a>`
-                    : `<span class="fish-step-go fish-step-go--muted">需先有讨论节点</span>`}
-            </div>
-            <div class="fish-step">
-                <span class="fish-step-n">3</span>
-                <div class="fish-step-ic">🎉</div>
-                <b class="fish-step-title">邀请同学来回复</b>
-                <span class="fish-step-desc">分享链接到群里，第一条回复就会浮出水面</span>
-                <span class="fish-step-go fish-step-go--muted">把链接甩进班级群即可 🚀</span>
-            </div>
-        </div>
+        <h3 class="fish-guide-title">还没有讨论</h3>
+        <p class="fish-guide-sub">选择节点后即可发帖。</p>
         ${createUrl
-            ? `<a class="fish-guide-btn" href="${createUrl}">✍️ 立即创建第一条讨论</a>`
-            : `<p class="fish-guide-hint">目前还没有讨论节点，先请管理员创建一个吧～</p>`}
-        <p class="fish-guide-hint">不是管理员？先 @ 一下管理员建好节点，再来发帖～</p>
+            ? `<a class="fish-guide-btn" href="${createUrl}">创建讨论</a>`
+            : `<p class="fish-guide-hint">请管理员先创建讨论节点。</p>`}
     `;
     empty.insertAdjacentElement('afterend', guide);
     // 原始空状态已被引导卡取代：标记隐藏，避免两个元素在 flex 父级里挤成一行
@@ -172,51 +134,27 @@ function enhanceCreateCard(): void {
     const quick = nodeQuickLinks();
     let action: string;
     if (cur) {
-        action = `<a class="fish-create-card__btn" href="${createUrl(cur.type, cur.name)}">开始创建 →</a>`;
+        action = `<a class="fish-create-card__btn" href="${createUrl(cur.type, cur.name)}">发帖</a>`;
     } else if (quick.length) {
         action = `<div class="fish-create-chips">${quick
             .slice(0, 6)
-            .map(([id, name]) => `<a class="fish-create-chip" href="${createUrl('node', id)}">在「${escapeHtml(name)}」下创建</a>`)
+            .map(([id, name]) => `<a class="fish-create-chip" href="${createUrl('node', id)}">${escapeHtml(name)}</a>`)
             .join('')}</div>`;
     } else {
-        action = `<p class="fish-create-card__desc">还没有讨论节点，请管理员先创建一个。</p>`;
+        action = `<p class="fish-create-card__desc">暂无节点</p>`;
     }
     const card = document.createElement('div');
     card.className = 'fish-create-card';
     card.innerHTML = `
-        <h4 class="fish-create-card__title">✍️ 创建讨论</h4>
-        <p class="fish-create-card__desc">有问题？有题解想分享？选一个节点开始发言。</p>
+        <h4 class="fish-create-card__title">创建讨论</h4>
+        <p class="fish-create-card__desc">选择节点</p>
         ${action}
     `;
     container!.insertAdjacentElement('afterbegin', card);
 }
 
-/** ③ 节点磁贴加彩色图标 + 计数徽标 */
 function enhanceNodes(): void {
-    const nodeItems = Array.from(
-        document.querySelectorAll<HTMLElement>(
-            'body.page--discussion_main .group-list > *, body.page--discussion_main .section__list__item',
-        ),
-    );
-    for (const item of nodeItems) {
-        if (item.querySelector('.fish-node-ic')) continue;
-        const link = item.querySelector<HTMLElement>('a') || item;
-        const name = (link.textContent || '').trim();
-        const icon = pickNodeIcon(name);
-        const ic = document.createElement('span');
-        ic.className = 'fish-node-ic';
-        ic.textContent = icon;
-        link.insertAdjacentElement('afterbegin', ic);
-
-        // 计数徽标：若名称里含有 (12) / 12 篇 之类的数字，提取并徽标化
-        const m = name.match(/[（(]?\s*(\d+)\s*(篇|条|个|帖)?\s*[）)]?/);
-        if (m) {
-            const cnt = document.createElement('span');
-            cnt.className = 'fish-node-cnt';
-            cnt.textContent = m[1];
-            link.insertAdjacentElement('beforeend', cnt);
-        }
-    }
+    /* 不再往节点名上叠图标，保持列表干净 */
 }
 
 /** ④ 有内容后：列表卡片化 + 排序 Tab（未来-proof） */
@@ -231,9 +169,9 @@ function enhanceListAndSort(): void {
     const tabs = document.createElement('div');
     tabs.className = 'fish-sort-tabs';
     tabs.innerHTML = `
-        <a class="fish-sort-tab fish-sort-tab--on" href="/discuss?sort=reply">🔥 最新回复</a>
-        <a class="fish-sort-tab" href="/discuss?sort=time">✨ 最新发布</a>
-        <a class="fish-sort-tab" href="/discuss?sort=hot">🏆 精华</a>
+        <a class="fish-sort-tab fish-sort-tab--on" href="/discuss?sort=reply">最新回复</a>
+        <a class="fish-sort-tab" href="/discuss?sort=time">最新发布</a>
+        <a class="fish-sort-tab" href="/discuss?sort=hot">精华</a>
     `;
     listWrap.insertAdjacentElement('beforebegin', tabs);
 }
