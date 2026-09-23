@@ -185,8 +185,12 @@
           </ul>
           <div class="problem-ide-tab-actions">
             {% if canEditProblem and pdoc %}
-            <a class="problem-ide-tab-action problem-ide-tab-action--labeled" href="{{ url('problem_edit', pid=pdoc.pid|default(pdoc.docId)) }}">编辑题目</a>
-            <a class="problem-ide-tab-action problem-ide-tab-action--labeled" href="{{ url('markdown_edit') }}?pid={{ pdoc.pid|default(pdoc.docId) }}">{% if pdoc.textSol %}编辑题解{% else %}创建题解{% endif %}</a>
+            <a class="problem-ide-tab-action" href="{{ url('problem_edit', pid=pdoc.pid|default(pdoc.docId)) }}" title="编辑题目" aria-label="编辑题目">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4.2L19 9.2 14.8 5 4 15.8V20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.8 6 18 10.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </a>
+            <a class="problem-ide-tab-action" href="{{ url('markdown_edit') }}?pid={{ pdoc.pid|default(pdoc.docId) }}" title="{% if pdoc.textSol %}编辑题解{% else %}创建题解{% endif %}" aria-label="{% if pdoc.textSol %}编辑题解{% else %}创建题解{% endif %}">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7V3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h8M9 17h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </a>
             {% endif %}
             <div class="problem-ide-section-switcher" id="problemIdeSectionSwitcher">
               <button type="button" class="problem-ide-tab-action problem-ide-tab-action--labeled problem-ide-section-switcher__btn" id="problemIdeSectionSwitcherBtn" title="当前节点题目" aria-label="当前节点题目" aria-haspopup="true" aria-expanded="false" aria-controls="problemIdeSectionSwitcherMenu">
