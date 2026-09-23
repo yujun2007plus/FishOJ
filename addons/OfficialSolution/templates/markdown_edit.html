@@ -1,19 +1,36 @@
 {% extends "layout/basic.html" %}
 {% block content %}
-<div class="row">
+<div class="row fish-md-edit">
   <div class="medium-12 columns">
     <div class="section">
       <div class="section__header">
-        <h1 class="section__title">题解编辑：{{ pid }} {{ pdoc.title if pdoc else '' }}</h1>
+        <h1 class="section__title">{{ _('markdown_edit') }}：{{ pid }} {{ pdoc.title if pdoc else '' }}</h1>
       </div>
       <div class="section__body">
-        <p><a href="{{ url('manage_problem_solution_edit', pid=pid) }}">管理页编辑</a> · <a href="/ide/{{ pid }}">做题页</a></p>
-        <form method="post" id="solutionEditForm">
-          <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">
-          <input type="hidden" name="pid" value="{{ pid }}">
-          <textarea data-editor data-markdown name="solContent" rows="24">{{ solContent }}</textarea>
-          <p><button type="submit" class="rounded primary button">保存题解</button></p>
-        </form>
+        <p>
+          <a href="{{ url('problem_edit', pid=pid) }}">返回编辑题目</a>
+          ·
+          <a href="/ide/{{ pid }}">做题页</a>
+          ·
+          <a href="{{ url('manage_coding_assist_problem', pid=pid) }}">脚手架</a>
+        </p>
+        <p>{% if hasTextSol %}本题已有官方题解，可继续修改。{% else %}本题还没有官方题解，在下方「题解内容」填写后点保存即可创建。{% endif %}</p>
+      </div>
+    </div>
+  </div>
+  <div class="medium-6 columns">
+    <div class="section markdown-body">
+      <h3>题目描述</h3>
+      <div class="section__body">
+        <textarea data-editor data-markdown name="content">{{ content }}</textarea>
+      </div>
+    </div>
+  </div>
+  <div class="medium-6 columns">
+    <div class="section markdown-body">
+      <h3>题解内容</h3>
+      <div class="section__body">
+        <textarea data-editor data-markdown name="solContent">{{ solContent }}</textarea>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { Context } from 'hydrooj';
+import { Context, PERM, PRIV } from 'hydrooj';
 import { getTextSolution, listParentIdsWithTextSolution } from '../lib/ProblemSolutionUtils';
 
 function excerpt(text: string, max = 360): string {
@@ -19,6 +19,12 @@ export function bindOfficialSolutionOnProblemIde(ctx: Context) {
                 if (!domainId || !pdoc?.docId) return;
                 const textSol = await getTextSolution(domainId, pdoc);
                 if (textSol) pdoc.textSol = textSol;
+                const u = that.user;
+                body.canEditProblem = !!(u && (
+                    u.hasPriv?.(PRIV.PRIV_EDIT_SYSTEM)
+                    || u.hasPerm?.(PERM.PERM_EDIT_PROBLEM)
+                    || u.own?.(pdoc, PERM.PERM_EDIT_PROBLEM_SELF)
+                ));
                 return;
             }
             if (template === 'manage_coding_assist.html') {

@@ -184,6 +184,10 @@
             <a class="section__tab-header-item" data-type="aiAnalysis"{% if not problemIdeCanSubmit %} hidden{% endif %}>AI分析</a>
           </ul>
           <div class="problem-ide-tab-actions">
+            {% if canEditProblem and pdoc %}
+            <a class="problem-ide-tab-action problem-ide-tab-action--labeled" href="{{ url('problem_edit', pid=pdoc.pid|default(pdoc.docId)) }}">编辑题目</a>
+            <a class="problem-ide-tab-action problem-ide-tab-action--labeled" href="{{ url('markdown_edit') }}?pid={{ pdoc.pid|default(pdoc.docId) }}">{% if pdoc.textSol %}编辑题解{% else %}创建题解{% endif %}</a>
+            {% endif %}
             <div class="problem-ide-section-switcher" id="problemIdeSectionSwitcher">
               <button type="button" class="problem-ide-tab-action problem-ide-tab-action--labeled problem-ide-section-switcher__btn" id="problemIdeSectionSwitcherBtn" title="当前节点题目" aria-label="当前节点题目" aria-haspopup="true" aria-expanded="false" aria-controls="problemIdeSectionSwitcherMenu">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h8v2H4V6zm0 5h8v2H4v-2zm0 5h8v2H4v-2zm10-9h4v12h-4V7z"/></svg>
