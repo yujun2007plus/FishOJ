@@ -192,6 +192,11 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7V3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h8M9 17h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
             </a>
             {% endif %}
+            {% if canManageScaffold %}
+            <a class="problem-ide-tab-action" href="{{ url('manage_coding_assist_problem', pid=pdoc.pid|default(pdoc.docId)) }}" title="辅助编码配置" aria-label="辅助编码配置">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3h-2a1.5 1.5 0 0 0 0 3h2v3a2 2 0 0 1-2 2h-3v-2a1.5 1.5 0 0 0-3 0v2H7a2 2 0 0 1-2-2v-3h2a1.5 1.5 0 0 0 0-3H4V5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+            </a>
+            {% endif %}
             <div class="problem-ide-section-switcher" id="problemIdeSectionSwitcher">
               <button type="button" class="problem-ide-tab-action problem-ide-tab-action--labeled problem-ide-section-switcher__btn" id="problemIdeSectionSwitcherBtn" title="当前节点题目" aria-label="当前节点题目" aria-haspopup="true" aria-expanded="false" aria-controls="problemIdeSectionSwitcherMenu">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h8v2H4V6zm0 5h8v2H4v-2zm0 5h8v2H4v-2zm10-9h4v12h-4V7z"/></svg>

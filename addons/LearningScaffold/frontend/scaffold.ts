@@ -56,8 +56,6 @@ export function initLearningScaffold() {
     if (!cfg?.scaffoldEnabled || !cfg.scaffold?.pid) return;
 
     const pid = cfg.scaffold.pid;
-    const storedMode = localStorage.getItem(MODE_KEY(pid));
-    const alreadyChosen = cfg.scaffold.hasChoice || storedMode != null;
 
     const mount = document.createElement('div');
     mount.innerHTML = `
@@ -187,19 +185,5 @@ export function initLearningScaffold() {
             changeBtn.addEventListener('click', openModal);
             resetBtn.insertAdjacentElement('afterend', changeBtn);
         }
-    }
-
-    const start = () => {
-        if (alreadyChosen) return;
-        openModal();
-    };
-
-    if (document.getElementById('problemIdeMonaco')) {
-        const onReady = () => {
-            document.removeEventListener('problem-ide-ready', onReady);
-            window.setTimeout(start, 300);
-        };
-        document.addEventListener('problem-ide-ready', onReady);
-        window.setTimeout(start, 1400);
     }
 }

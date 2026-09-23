@@ -1,4 +1,4 @@
-import { Context } from 'hydrooj';
+import { Context, PRIV } from 'hydrooj';
 import { getChoice, getLearningProblem } from '../model/learning';
 
 export function bindScaffoldOnProblemIde(ctx: Context) {
@@ -7,6 +7,16 @@ export function bindScaffoldOnProblemIde(ctx: Context) {
         if (!body) return;
         if (that.response.template !== 'problem_ide.html' && body.page_name !== 'problem_ide') return;
         body.learning = body.learning || { scaffoldEnabled: false, tutorEnabled: false };
+        // 管理员可在题面标签栏看到「辅助编码」入口（脚手架按题配置，需 PRIV_EDIT_SYSTEM）
+        try {
+            body.canManageScaffold = !!(
+                that.user
+                && typeof that.user.hasPriv === 'function'
+                && that.user.hasPriv(PRIV.PRIV_EDIT_SYSTEM)
+            );
+        } catch {
+            body.canManageScaffold = false;
+        }
         try {
             const pdoc = body.pdoc;
             const pid = String(pdoc?.pid || pdoc?.docId || '');
