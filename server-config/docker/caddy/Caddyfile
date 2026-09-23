@@ -1,0 +1,24 @@
+# FishOJ 本机 Docker 反代：SSE 30min + gzip + /discuss/create 修正
+:80 {
+  # Hydro 把 /discuss/create 当成帖子 id，必须先改到带节点的创建页
+  @brokenDiscussCreate {
+    path /discuss/create /discuss/create/ /d/*/discuss/create /d/*/discuss/create/
+  }
+  redir @brokenDiscussCreate /discuss/node/news/create 302
+
+  @compressible {
+    not path *.mp4 *.webm *.m4v *.mp3 *.m3u8 *.ts
+    not path /video-course/*/file/*
+  }
+  encode @compressible zstd gzip
+
+  handle {
+    reverse_proxy http://backend:8888 {
+      transport http {
+        read_timeout 30m
+        write_timeout 30m
+        dial_timeout 10s
+      }
+    }
+  }
+}

@@ -1,0 +1,69 @@
+# FishOJ 本机 Docker 部署（Hydro 核心 + 本仓库 addons）
+# 用法：在 server-config/docker 目录下执行  docker compose up -d --build
+# 本机 80/443 被占用时，通过 .env 的 CADDY_PORT 改对外端口（默认 8080）
+services:
+  mongo:
+    image: mongo:7-jammy
+    container_name: fishoj-mongo
+    restart: unless-stopped
+    volumes:
+      - ./data/mongo:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    # 刻意不把 27017 暴露到宿主机（mongo 无密码）
+
+  backend:
+    build:
+      context: ../..
+      dockerfile: server-config/docker/backend/Dockerfile
+    container_name: fishoj-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./data/file:/data/file
+      - ./data/backend:/root/.hydro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8888/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+  judge:
+    build:
+      context: ./judge
+      dockerfile: Dockerfile
+    container_name: fishoj-judge
+    restart: unless-stopped
+    privileged: true
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./judge/judge.yaml:/root/.hydro/judge.yaml:ro
+      - ./judge/mount.yaml:/root/.hydro/mount.yaml:ro
+
+  caddy:
+    image: caddy:2
+    container_name: fishoj-caddy
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${CADDY_PORT:-8080}:80"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

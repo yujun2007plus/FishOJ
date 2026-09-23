@@ -1,0 +1,14 @@
+.git
+.gitignore
+**/node_modules
+**/__pycache__
+**/*.pyc
+docs
+*.docx
+*.pptx
+*.pdf
+*.zip
+题库
+Tool
+.cursor
+server-config/docker/data

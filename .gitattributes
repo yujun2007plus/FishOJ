@@ -1,0 +1,3 @@
+# Docker / shell 文件强制 LF，避免容器内 /bin/sh 因 CRLF 报错
+server-config/docker/** text eol=lf
+.dockerignore text eol=lf
