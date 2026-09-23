@@ -91,7 +91,8 @@ function resolveCreateUrl(): string | null {
     const cur = nodeFromPath();
     if (cur) return createUrl(cur.type, cur.name);
     const quick = nodeQuickLinks();
-    return quick.length ? createUrl('node', quick[0][0]) : null;
+    if (quick.length) return createUrl('node', quick[0][0]);
+    return createUrl('node', 'news');
 }
 
 function rewriteBrokenCreateLinks(): void {

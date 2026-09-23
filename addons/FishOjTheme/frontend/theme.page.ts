@@ -38,7 +38,7 @@ if (typeof document !== 'undefined') {
             window.location.href = `${prefix}/discuss/node/${encodeURIComponent(decodeURIComponent(m[1]))}/create`;
             return;
         }
-        window.location.href = `${prefix}/discuss`;
+        window.location.href = `${prefix}/discuss/node/news/create`;
     }, true);
 }
 

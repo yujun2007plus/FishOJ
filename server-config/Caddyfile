@@ -10,6 +10,11 @@
 # - 音视频不走 gzip，避免拖慢大文件
 # - reverse_proxy 读写超时 30 分钟，保证 AI 流式输出不被网关掐断
 :80 {
+  # Hydro 把 /discuss/create 当成帖子 id，必须先改到带节点的创建页
+  @brokenDiscussCreate {
+    path /discuss/create /discuss/create/ /d/*/discuss/create /d/*/discuss/create/
+  }
+  redir @brokenDiscussCreate /discuss/node/news/create 302
   @compressible {
     not path *.mp4 *.webm *.m4v *.mp3 *.m3u8 *.ts
     not path /video-course/*/file/*
