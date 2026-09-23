@@ -5,7 +5,7 @@
     <h1 class="section__title">{{ _('manage_coding_assist') }}</h1>
   </div>
   <div class="section__body">
-    <p>按题配置<strong>学习方式脚手架</strong>、<strong>编程小助手</strong>、<strong>AI 助教</strong>、<strong>AI 分析</strong>。全局 LLM 密钥请到对应插件管理页；此处只控制「本题是否启用」与脚手架模板。</p>
+    <p>配置顺序：先写<strong>官方题解</strong>（可空着以后再补），再配本题的学习方式脚手架和小助手 / 助教 / 分析开关。全局 LLM 密钥在对应插件管理页。</p>
     <form method="post">
       <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">
       <label>题号
@@ -20,6 +20,7 @@
         <tr>
           <th>题号</th>
           <th>标题</th>
+          <th>官方题解</th>
           <th>教学模式</th>
           <th>小助手</th>
           <th>AI 助教</th>
@@ -32,11 +33,16 @@
         <tr>
           <td>{{ it.pid }}</td>
           <td>{{ it.title }}</td>
+          <td>{% if it.hasTextSol %}有{% else %}暂无{% endif %}</td>
           <td>{% if it.enabled %}开{% else %}关{% endif %}</td>
           <td>{% if it.tutorEnabled %}开{% else %}关{% endif %}</td>
           <td>{% if it.assistantEnabled %}开{% else %}关{% endif %}</td>
           <td>{% if it.analysisEnabled %}开{% else %}关{% endif %}</td>
-          <td><a href="{{ url('manage_coding_assist_problem', pid=it.pid) }}">编辑</a></td>
+          <td>
+            <a href="{{ url('manage_problem_solution_edit', pid=it.pid) }}">题解</a>
+            ·
+            <a href="{{ url('manage_coding_assist_problem', pid=it.pid) }}">脚手架</a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>

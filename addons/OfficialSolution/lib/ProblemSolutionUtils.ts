@@ -30,7 +30,25 @@ async function findOfficialSolutionDocs(domainId: string, problemDocId: number) 
 export async function getTextSolution(domainId: string, pdoc: { docId: number }): Promise<string> {
     const psdocs = await findOfficialSolutionDocs(domainId, pdoc.docId);
     if (!psdocs.length) return '';
-    return stringifyPlainText(psdocs[0]?.content);
+    return stringifyPlainText(psdocs[0]?.content).trim();
+}
+
+/** 域内已有非空官方文字题解的题目 parentId（Problem.docId） */
+export async function listParentIdsWithTextSolution(domainId: string): Promise<Set<number>> {
+    const uids = getPublisherUids();
+    const psdocs = await DocumentModel.getMulti(
+        domainId,
+        DocumentModel.TYPE_PROBLEM_SOLUTION,
+        {
+            parentType: DocumentModel.TYPE_PROBLEM,
+            owner: { $in: uids },
+        },
+    ).toArray();
+    const ids = new Set<number>();
+    for (const doc of psdocs) {
+        if (stringifyPlainText(doc?.content).trim()) ids.add(Number(doc.parentId));
+    }
+    return ids;
 }
 
 /** 保存官方文字题解；无则新建，有则更新（与 CodeFun upload_sol API 一致） */

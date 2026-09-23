@@ -5,7 +5,7 @@
     <h1 class="section__title">{{ _('manage_problem_solution') }}</h1>
   </div>
   <div class="section__body">
-    <p>编辑题目的<strong>官方文字题解</strong>（存 Mongo <code>document</code>，类型 <code>TYPE_PROBLEM_SOLUTION</code>）。AI 分析、IDE 题解 Tab 均读取此处内容。</p>
+    <p>官方文字题解是教学配置的第一步：写好后，再去「辅助编码管理」配脚手架。没有题解的题目可以空着。内容存 Mongo <code>document</code>（<code>TYPE_PROBLEM_SOLUTION</code>），IDE 题解 Tab 与 AI 分析都读这里。</p>
     <form method="post">
       <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">
       <label>题号

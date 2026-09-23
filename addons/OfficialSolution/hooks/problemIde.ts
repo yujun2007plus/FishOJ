@@ -1,21 +1,48 @@
 import { Context } from 'hydrooj';
-import { getTextSolution } from '../lib/ProblemSolutionUtils';
+import { getTextSolution, listParentIdsWithTextSolution } from '../lib/ProblemSolutionUtils';
+
+function excerpt(text: string, max = 360): string {
+    const t = String(text || '').trim();
+    if (t.length <= max) return t;
+    return `${t.slice(0, max)}…`;
+}
 
 export function bindOfficialSolutionOnProblemIde(ctx: Context) {
     ctx.on('handler/after', async (that: any) => {
         const body = that.response?.body;
-        if (!body?.pdoc) return;
-        if (that.response.template !== 'problem_ide.html' && body.page_name !== 'problem_ide') return;
+        if (!body) return;
+        const template = String(that.response.template || '');
+        const domainId = that.args?.domainId;
         try {
-            const domainId = that.args?.domainId;
-            const pdoc = body.pdoc;
-            if (!domainId || !pdoc?.docId) return;
-            const textSol = await getTextSolution(domainId, pdoc);
-            if (textSol) {
-                pdoc.textSol = textSol;
+            if (template === 'problem_ide.html' || body.page_name === 'problem_ide') {
+                const pdoc = body.pdoc;
+                if (!domainId || !pdoc?.docId) return;
+                const textSol = await getTextSolution(domainId, pdoc);
+                if (textSol) pdoc.textSol = textSol;
+                return;
+            }
+            if (template === 'manage_coding_assist.html') {
+                const items = body.items;
+                if (!domainId || !Array.isArray(items)) return;
+                const hasSol = await listParentIdsWithTextSolution(domainId);
+                for (const it of items) {
+                    const docId = Number(it.docId);
+                    it.hasTextSol = Number.isFinite(docId) && hasSol.has(docId);
+                }
+                return;
+            }
+            if (
+                template === 'manage_coding_assist_problem.html'
+                || template === 'scaffold_admin.html'
+            ) {
+                const pdoc = body.pdoc;
+                if (!domainId || !pdoc?.docId) return;
+                const textSol = await getTextSolution(domainId, pdoc);
+                body.hasTextSol = !!textSol;
+                body.solPreview = excerpt(textSol);
             }
         } catch {
-            /* 题解加载失败不影响做题 */
+            /* 题解查询失败不影响做题或脚手架配置 */
         }
     });
 }

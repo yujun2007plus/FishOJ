@@ -3,7 +3,13 @@
 <div class="row">
   <div class="medium-10 medium-offset-1 columns">
     <h1>教学脚手架：{{ pid }} {{ pdoc.title if pdoc else '' }}</h1>
-    <p><a href="/ide/{{ pid }}">打开做题页</a></p>
+    <p>
+      <a href="/ide/{{ pid }}">打开做题页</a>
+      ·
+      <a href="{{ url('manage_problem_solution_edit', pid=pid) }}">{% if hasTextSol %}编辑官方题解{% else %}编写官方题解{% endif %}</a>
+    </p>
+    <p>{% if hasTextSol %}本题已有官方题解。{% else %}本题暂无官方题解，也可先配脚手架。{% endif %}</p>
+    {% if hasTextSol and solPreview %}<pre>{{ solPreview }}</pre>{% endif %}
     <form method="post">
       <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">
       <div class="section">

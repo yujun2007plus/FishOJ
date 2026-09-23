@@ -9,9 +9,17 @@
       <a href="{{ url('manage_coding_assist') }}">返回辅助编码管理</a>
       ·
       <a href="/ide/{{ pid }}">打开做题页</a>
-      ·
-      <a href="{{ url('manage_problem_solution_edit', pid=pid) }}">编辑题解</a>
     </p>
+    <h2>1. 官方题解</h2>
+    <p>先对照官方题解再写脚手架。本题没有题解也可以先保存开关和模板。</p>
+    {% if hasTextSol %}
+    <p>本题已有官方题解。</p>
+    <pre class="codebox">{{ solPreview }}</pre>
+    {% else %}
+    <p>本题暂无官方题解。</p>
+    {% endif %}
+    <p><a href="{{ url('manage_problem_solution_edit', pid=pid) }}">{% if hasTextSol %}编辑官方题解{% else %}编写官方题解{% endif %}</a></p>
+    <h2>2. 本题教学配置</h2>
     <form method="post">
       <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">
       <button type="submit" name="operation" value="fill_demo" class="rounded primary button">填入「三数最大值」示例</button>

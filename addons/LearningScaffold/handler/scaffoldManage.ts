@@ -63,6 +63,7 @@ export class ScaffoldManageHandler extends Handler {
             const pdoc = await ProblemModel.get(domainId, row.pid);
             items.push({
                 pid: row.pid,
+                docId: pdoc?.docId,
                 title: pdoc?.title || row.pid,
                 enabled: row.enabled === true,
                 tutorEnabled: row.tutorEnabled !== false,
