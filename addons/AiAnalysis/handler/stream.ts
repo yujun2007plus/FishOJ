@@ -274,18 +274,20 @@ export class AiAnalysisStreamHandler extends Handler {
                         success: true,
                     });
                 } catch (e: any) {
+                    const closed = e instanceof AiAnalysisStreamClientClosedError
+                        || /sse stream ended|sse write failed/i.test(String(e?.message || ''));
                     try {
                         sseWrite(stream, {
                             type: 'error',
-                            error: e?.message ? `读取缓存失败：${e.message}` : '读取缓存失败，请稍后重试',
+                            error: closed ? '客户端已断开连接' : (e?.message ? `读取缓存失败：${e.message}` : '读取缓存失败，请稍后重试'),
                         });
                     } catch { /* client closed */ }
                     await logAiAnalysisCall(this.ctx, {
                         ...logBase(),
                         fromCache: true,
                         quotaConsumed: false,
-                        success: false,
-                        error: e?.message || 'cache_read_failed',
+                        success: !closed,
+                        ...(closed ? {} : { error: e?.message || 'cache_read_failed' }),
                     });
                 } finally {
                     stream.end();
@@ -420,6 +422,8 @@ export class AiAnalysisStreamHandler extends Handler {
                     success: true,
                 });
             } catch (e: any) {
+                const closed = e instanceof AiAnalysisStreamClientClosedError
+                    || /sse stream ended|sse write failed/i.test(String(e?.message || ''));
                 if (didConsumeQuota && shouldRollbackAfterOfficialStreamFailure(e)) {
                     try {
                         await rollbackAiAnalysisConsume(this.ctx, uid);
@@ -428,15 +432,15 @@ export class AiAnalysisStreamHandler extends Handler {
                 try {
                     sseWrite(stream, {
                         type: 'error',
-                        error: e?.message ? `AI 分析失败：${e.message}` : 'AI 分析失败，请稍后重试',
+                        error: closed ? '客户端已断开连接' : (e?.message ? `AI 分析失败：${e.message}` : 'AI 分析失败，请稍后重试'),
                     });
                 } catch { /* client closed */ }
                 await logAiAnalysisCall(this.ctx, {
                     ...logBase(),
                     fromCache: false,
                     quotaConsumed: false,
-                    success: false,
-                    error: e?.message || 'stream_failed',
+                    success: !closed,
+                    ...(closed ? {} : { error: e?.message || 'stream_failed' }),
                 });
             } finally {
                 stream.end();
