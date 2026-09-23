@@ -6,9 +6,23 @@
 {% import "components/user.html" as user with context %}
 <!DOCTYPE html>
 {% set theme = (handler.user|default({})).theme|default('default') %}
-<html data-page="{{ page_name }}" data-layout="{{ layout_name }}" class="layout--{{ layout_name }} page--{{ page_name }} theme--{{ theme }} nojs" data-mantine-color-scheme="{{ 'dark' if theme.includes('dark') else 'light' }}" lang="{{ UserContext.viewLang }}" data-app="Hydro">
+<html data-page="{{ page_name }}" data-layout="{{ layout_name }}" class="layout--{{ layout_name }} page--{{ page_name }} theme--{{ theme }} nojs is-loading" data-mantine-color-scheme="{{ 'dark' if theme.includes('dark') else 'light' }}" lang="{{ UserContext.viewLang }}" data-app="Hydro">
 <head>
   <meta charset="UTF-8">
+  <style>
+    /* 先于任何外链 CSS：铺目标底色，并在主题包到达前隐藏正文，避免 FOUC */
+    html { background: #f6f8fc; }
+    html.theme--dark, html[data-mantine-color-scheme="dark"] { background: #0b1220; }
+    html.is-loading body {
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+    html.is-loaded body {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+  </style>
+  <noscript><style>html.is-loading body { opacity: 1 !important; visibility: visible !important; }</style></noscript>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -117,6 +131,14 @@
     }
     .nav__logo-text > span { color: #ffc45e !important; }
   </style>
+  <script>
+    // 主题 JS 未到或失败时，1.6s 后强制显示，避免一直空白
+    setTimeout(function () {
+      var el = document.documentElement;
+      el.classList.remove('is-loading');
+      el.classList.add('is-loaded');
+    }, 1600);
+  </script>
   {% if not isIE(handler.request.headers['user-agent']) and not handler.session.legacy %}
     <script>
       var _htmlNode = document.documentElement;

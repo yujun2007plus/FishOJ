@@ -19,7 +19,7 @@ import { initTrainStatus } from './train_status';
 // 题库标签三维分组（来源/赛事/知识点）自注册到 problem_main / problem_category
 import './tags_sidebar';
 
-// 主题样式已注入，移除 FOUC 防护（保留 v3 基线逻辑）
+// 主题 CSS 已随本模块注入，立刻揭开正文，结束 FOUC 隐藏
 if (typeof document !== 'undefined') {
     document.documentElement.classList.remove('is-loading');
     document.documentElement.classList.add('is-loaded');
