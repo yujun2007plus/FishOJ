@@ -23,15 +23,6 @@ import './tags_sidebar';
 if (typeof document !== 'undefined') {
     document.documentElement.classList.remove('is-loading');
     document.documentElement.classList.add('is-loaded');
-    const brandTitle = () => {
-        const t = (document.title || '').replace(/HydroOJ/g, 'FishOJ').replace(/ - FishOJ\s*$/, ' · FishOJ');
-        document.title = /FishOJ/.test(t) ? t : (t ? `${t} · FishOJ` : 'FishOJ');
-    };
-    brandTitle();
-    const titleEl = document.querySelector('title');
-    if (titleEl && typeof MutationObserver !== 'undefined') {
-        new MutationObserver(brandTitle).observe(titleEl, { childList: true, characterData: true, subtree: true });
-    }
     // /discuss/create 会被官方当成帖子 id，点到即 ValidationError
     document.addEventListener('click', (ev) => {
         const a = (ev.target as Element | null)?.closest?.('a');
