@@ -15,7 +15,7 @@
 .fish-scaffold-modal__card {
   position: relative;
   width: min(560px, calc(100vw - 32px));
-  background: #fff;
+  background: var(--fishoj-surface);
   border-radius: 18px;
   padding: 24px 24px 20px;
   box-shadow: 0 20px 60px rgba(11, 36, 71, 0.28);
@@ -29,12 +29,12 @@
   margin: 0 0 6px;
   font-size: 22px;
   font-weight: 700;
-  color: #0b2447;
+  color: var(--fishoj-navy);
 }
 .fish-scaffold-modal__sub {
-  margin: 0 0 16px;
-  color: #64748b;
-  font-size: 13px;
+  margin: 0 0 var(--fishoj-space-4);
+  color: var(--fishoj-text-muted);
+  font-size: var(--fishoj-font-sm);
 }
 .fish-scaffold-modal__opts { display: grid; gap: 10px; }
 .fish-scaffold-opt {
@@ -43,17 +43,17 @@
   align-items: flex-start;
   text-align: left;
   width: 100%;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
+  border: 1px solid var(--fishoj-border);
+  background: var(--fishoj-surface-2);
   border-radius: 12px;
   padding: 12px 14px;
   cursor: pointer;
 }
-.fish-scaffold-opt:hover { border-color: #2f6bff; background: #f0f5ff; }
+.fish-scaffold-opt:hover { border-color: var(--fishoj-blue); background: var(--fishoj-surface-2); }
 .fish-scaffold-opt--selected,
 .fish-scaffold-opt--selected:hover {
-  border-color: #ffc45e;
-  background: linear-gradient(135deg, #fff9ed 0%, #fff4e0 100%);
+  border-color: var(--fishoj-gold);
+  background: linear-gradient(135deg, var(--fishoj-gold-soft) 0%, var(--fishoj-gold-soft) 100%);
   box-shadow: 0 0 0 2px rgba(255, 196, 94, 0.35);
 }
 .theme--dark .fish-scaffold-opt {
@@ -62,9 +62,9 @@
   color: inherit;
 }
 .fish-scaffold-opt__emoji { font-size: 22px; line-height: 1.2; }
-.fish-scaffold-opt__title { font-weight: 700; color: #0b2447; }
-.fish-scaffold-opt__desc { font-size: 12px; color: #64748b; margin-top: 2px; }
-.fish-scaffold-opt:hover .fish-scaffold-opt__title { color: #2f6bff; }
+.fish-scaffold-opt__title { font-weight: 700; color: var(--fishoj-navy); }
+.fish-scaffold-opt__desc { font-size: var(--fishoj-font-xs); color: var(--fishoj-text-muted); margin-top: 2px; }
+.fish-scaffold-opt:hover .fish-scaffold-opt__title { color: var(--fishoj-blue); }
 .fish-scaffold-diff {
   position: fixed;
   inset: 0;
@@ -77,8 +77,8 @@
 .fish-scaffold-diff__card {
   position: relative;
   width: min(640px, calc(100vw - 32px));
-  background: #fff;
-  border-radius: 14px;
+  background: var(--fishoj-surface);
+  border-radius: var(--fishoj-radius-lg);
   padding: 18px;
 }
 .theme--dark .fish-scaffold-diff__card { background: #1e1e1e; color: #e8e8e8; }

@@ -9,11 +9,11 @@
   --assistant-font-h2: 21px;
   --assistant-font-title: 17px;
 
-  --assistant-text-primary: #1f2328;
-  --assistant-text-secondary: #57606a;
+  --assistant-text-primary: var(--fishoj-text);
+  --assistant-text-secondary: var(--fishoj-text-muted);
   --assistant-text-tertiary: #6e7781;
 
-  --assistant-surface: #ffffff;
+  --assistant-surface: var(--fishoj-surface);
   --assistant-surface-muted: #f6f8fa;
 
   --assistant-border: #d8dee4;
@@ -60,8 +60,8 @@
 }
 
 .cf-assistant-launcher {
-  --launcher-accent-start: #ffc45e;
-  --launcher-accent-end: #f59e0b;
+  --launcher-accent-start: var(--fishoj-gold);
+  --launcher-accent-end: var(--fishoj-gold);
   height: 46px;
   min-width: 0;
   width: auto;
@@ -69,7 +69,7 @@
   gap: 10px;
   border: 1px solid rgba(255, 184, 77, 0.42);
   border-radius: 999px;
-  background: linear-gradient(180deg, #16335f 0%, #0b1f3f 100%);
+  background: linear-gradient(180deg, var(--fishoj-navy) 0%, var(--fishoj-navy) 100%);
   color: #fff;
   box-shadow:
     0 8px 22px rgba(11, 31, 63, 0.28),
@@ -123,9 +123,9 @@
 }
 
 .cf-assistant-launcher--active {
-  background: linear-gradient(180deg, #1d3f6e 0%, #0b1f3f 100%);
+  background: linear-gradient(180deg, var(--fishoj-navy-2) 0%, var(--fishoj-navy) 100%);
   border-color: rgba(255, 184, 77, 0.6);
-  color: #ffe9b0;
+  color: var(--fishoj-gold-soft);
   box-shadow:
     0 10px 26px rgba(11, 31, 63, 0.34),
     0 2px 6px rgba(245, 158, 11, 0.2);
@@ -133,7 +133,7 @@
 
 .cf-assistant-launcher--active .cf-assistant-launcher-icon {
   background: rgba(255, 184, 77, 0.24);
-  color: #ffc45e;
+  color: var(--fishoj-gold);
 }
 
 .cf-assistant-launcher:focus-visible {
@@ -1143,7 +1143,7 @@
   height: 38px;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ffc45e 0%, #f59e0b 60%, #f97316 100%);
+  background: linear-gradient(135deg, var(--fishoj-gold) 0%, var(--fishoj-gold) 60%, var(--fishoj-gold-deep) 100%);
   color: #fff;
   cursor: pointer;
   display: inline-flex;
@@ -1155,7 +1155,7 @@
 
 .cf-assistant-send:hover:not(:disabled),
 .cf-assistant-send-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #ffd27a 0%, #f7a823 60%, #fb831a 100%);
+  background: linear-gradient(135deg, var(--fishoj-gold) 0%, #f7a823 60%, #fb831a 100%);
   box-shadow: 0 8px 20px -6px rgba(245, 158, 11, 0.7);
 }
 
@@ -1168,8 +1168,8 @@
 /* 停止态必须压过发送按钮蓝底及其 :hover / 全局 button 样式 */
 .cf-assistant-root button.cf-assistant-send.cf-assistant-send--stop,
 .cf-assistant-root button.cf-assistant-send-button.cf-assistant-send--stop {
-  background: #57606a !important;
-  background-color: #57606a !important;
+  background: var(--fishoj-text-muted) !important;
+  background-color: var(--fishoj-text-muted) !important;
   background-image: none !important;
   color: #fff !important;
   border-color: transparent !important;
@@ -1183,8 +1183,8 @@
 .cf-assistant-root button.cf-assistant-send-button.cf-assistant-send--stop:focus,
 .cf-assistant-root button.cf-assistant-send-button.cf-assistant-send--stop:focus-visible,
 .cf-assistant-root button.cf-assistant-send-button.cf-assistant-send--stop:active {
-  background: #1f2328 !important;
-  background-color: #1f2328 !important;
+  background: var(--fishoj-text) !important;
+  background-color: var(--fishoj-text) !important;
   background-image: none !important;
   color: #fff !important;
 }
@@ -1197,7 +1197,7 @@
 
 .cf-assistant-root button.cf-assistant-send.cf-assistant-send--stop:focus-visible,
 .cf-assistant-root button.cf-assistant-send-button.cf-assistant-send--stop:focus-visible {
-  outline-color: #57606a;
+  outline-color: var(--fishoj-text-muted);
 }
 
 /* ── Footer / quota ── */
@@ -1352,7 +1352,7 @@
   gap: 7px;
   border: 1px solid #c7d8ff;
   border-radius: 999px;
-  background: #eef3ff;
+  background: var(--fishoj-surface-2);
   color: var(--assistant-accent) !important;
   box-shadow: 0 6px 18px rgba(47, 107, 255, 0.16);
   cursor: pointer;
@@ -1369,7 +1369,7 @@
 }
 
 .cf-assistant-add-selection-float.cf-assistant-add-selection--ready:not(:disabled) {
-  background: #eef3ff;
+  background: var(--fishoj-surface-2);
   border-color: #c7d8ff;
   color: var(--assistant-accent) !important;
   box-shadow: 0 6px 18px rgba(47, 107, 255, 0.16);
@@ -1658,14 +1658,14 @@
 [data-theme='dark'] .cf-assistant-add-selection--ready:not(:disabled) {
   background: rgba(68, 147, 248, 0.12);
   border-color: rgba(68, 147, 248, 0.35);
-  color: #79b8ff;
+  color: var(--fishoj-blue-soft);
 }
 
 .theme--dark .cf-assistant-add-selection-float.cf-assistant-add-selection--ready:not(:disabled),
 [data-theme='dark'] .cf-assistant-add-selection-float.cf-assistant-add-selection--ready:not(:disabled) {
   background: #152238;
   border-color: rgba(88, 166, 255, 0.45);
-  color: #79b8ff !important;
+  color: var(--fishoj-blue-soft) !important;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
@@ -1676,7 +1676,7 @@
 [data-theme='dark'] .cf-assistant-add-selection-float .cf-assistant-add-selection-icon i,
 [data-theme='dark'] .cf-assistant-add-selection-float .cf-assistant-add-selection-label {
   background: transparent;
-  color: #79b8ff !important;
+  color: var(--fishoj-blue-soft) !important;
 }
 
 .theme--dark .cf-assistant-add-selection-float .cf-assistant-add-selection-icon,
@@ -1873,9 +1873,9 @@
 
 .theme--dark .cf-assistant-launcher,
 [data-theme='dark'] .cf-assistant-launcher {
-  --launcher-accent-start: #ffc45e;
-  --launcher-accent-end: #f59e0b;
-  background: linear-gradient(180deg, #16335f 0%, #0b1f3f 100%);
+  --launcher-accent-start: var(--fishoj-gold);
+  --launcher-accent-end: var(--fishoj-gold);
+  background: linear-gradient(180deg, var(--fishoj-navy) 0%, var(--fishoj-navy) 100%);
   color: #fff;
   border-color: rgba(255, 184, 77, 0.4);
   box-shadow:
@@ -1893,9 +1893,9 @@
 
 .theme--dark .cf-assistant-launcher--active,
 [data-theme='dark'] .cf-assistant-launcher--active {
-  background: linear-gradient(180deg, #1d3f6e 0%, #0b1f3f 100%);
+  background: linear-gradient(180deg, var(--fishoj-navy-2) 0%, var(--fishoj-navy) 100%);
   border-color: rgba(255, 184, 77, 0.6);
-  color: #ffe9b0;
+  color: var(--fishoj-gold-soft);
 }
 
 .theme--dark .cf-assistant-panel,

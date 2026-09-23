@@ -25,14 +25,17 @@ export class AiAnalysisAdminHandler extends Handler {
             { $group: { _id: null, total: { $sum: '$count' } } },
         ]).toArray();
         const todayTotal = todayUsage[0]?.total ?? 0;
-        let llmConfigured = false;
+        const storedApiKey = String(stored.apiKey || '').trim();
+        let envKey = '';
         try {
-            llmConfigured = Boolean(
-                String(process.env.DEEPSEEK_API_KEY || process.env.BUILTIN_API_KEY || '').trim(),
-            );
+            envKey = String(process.env.DEEPSEEK_API_KEY || process.env.BUILTIN_API_KEY || '').trim();
         } catch {
-            llmConfigured = false;
+            envKey = '';
         }
+        const llmConfigured = Boolean(storedApiKey || envKey);
+        const apiKeyMasked = storedApiKey
+            ? `${storedApiKey.slice(0, 6)}****${storedApiKey.slice(-4)}`
+            : '';
         this.response.template = 'manage_ai_analysis.html';
         this.response.body = {
             page_name: 'manage_ai_analysis',
@@ -43,7 +46,9 @@ export class AiAnalysisAdminHandler extends Handler {
             todayTotal,
             cacheTtlHours: Math.round(RECORD_AI_ANALYSIS_CACHE_TTL_MS / 3600000),
             llmConfigured,
-            llmNote: '流式分析优先使用环境变量 DEEPSEEK_API_KEY / BUILTIN_API_KEY（对齐 CodeFun AiQuota「大模型 API」的环境变量回退）。',
+            apiKeyMasked,
+            apiKeySource: storedApiKey ? 'panel' : envKey ? 'env' : 'none',
+            llmNote: '密钥优先级：本页填写的 Key ＞ 环境变量 DEEPSEEK_API_KEY / BUILTIN_API_KEY。留空则回退到环境变量。',
         };
     }
 
@@ -58,11 +63,14 @@ export class AiAnalysisAdminHandler extends Handler {
         }
         const enabled = a.enabled === '1' || a.enabled === true || a.enabled === 'on';
         const rawLimit = Number(a.daily_limit);
+        // 密码框留空表示不改已保存密钥（表单总会提交该字段）
+        const rawApiKey = typeof a.api_key === 'string' ? a.api_key.trim() : '';
         await saveAnalysisSettings({
             enabled,
             dailyLimit: Number.isFinite(rawLimit) && rawLimit > 0
                 ? rawLimit
                 : getStoredAnalysisSettings().dailyLimit,
+            ...(rawApiKey ? { apiKey: rawApiKey } : {}),
         });
         this.back();
     }

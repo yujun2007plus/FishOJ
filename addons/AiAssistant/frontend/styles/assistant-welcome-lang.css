@@ -20,7 +20,7 @@
   font-size: 12px;
   font-weight: 500;
   line-height: 1.4;
-  color: #667085;
+  color: var(--fishoj-text-muted);
   text-align: center;
 }
 
@@ -36,9 +36,9 @@
   width: 100%;
   height: 36px;
   padding: 0 10px;
-  border: 1px solid #d8e2f0;
+  border: 1px solid var(--fishoj-surface-2);
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--fishoj-surface);
   color: #1f2937;
   font-family: inherit;
   font-size: 13px;
@@ -62,7 +62,7 @@
 .cf-assistant-welcome-lang-icon {
   flex-shrink: 0;
   font-size: 11px;
-  color: #1677ff;
+  color: var(--fishoj-navy-2);
   opacity: 0.85;
 }
 
@@ -76,20 +76,20 @@
   flex-shrink: 0;
   margin-left: 6px;
   font-size: 10px;
-  color: #667085;
+  color: var(--fishoj-text-muted);
   transition: transform 160ms ease;
 }
 
 .cf-assistant-welcome-lang-trigger:hover {
-  border-color: #8ab8f8;
-  background: #f8fbff;
+  border-color: var(--fishoj-blue-soft);
+  background: var(--fishoj-surface-2);
   box-shadow: 0 4px 12px rgba(22, 119, 255, 0.1);
 }
 
 .cf-assistant-welcome-lang-trigger:focus-visible,
 .cf-assistant-welcome-lang--open .cf-assistant-welcome-lang-trigger {
   outline: none;
-  border-color: #1677ff;
+  border-color: var(--fishoj-navy-2);
   box-shadow:
     0 2px 8px rgba(22, 119, 255, 0.07),
     0 0 0 3px rgba(22, 119, 255, 0.12);
@@ -105,9 +105,9 @@
   margin: 0;
   padding: 4px;
   list-style: none;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--fishoj-border-soft);
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--fishoj-surface);
   box-shadow: 0 8px 22px rgba(31, 41, 55, 0.14);
   opacity: 0;
   transform: translateY(-4px);
@@ -140,13 +140,13 @@
 }
 
 .cf-assistant-welcome-lang-option:hover {
-  background: #f0f6ff;
-  color: #1677ff;
+  background: var(--fishoj-surface-2);
+  color: var(--fishoj-navy-2);
 }
 
 .cf-assistant-welcome-lang-option--selected {
-  background: #eaf3ff;
-  color: #1677ff;
+  background: var(--fishoj-surface-2);
+  color: var(--fishoj-navy-2);
   font-weight: 600;
 }
 
@@ -154,7 +154,7 @@
   flex-shrink: 0;
   margin-left: 6px;
   font-size: 11px;
-  color: #1677ff;
+  color: var(--fishoj-navy-2);
   opacity: 0;
   transition: opacity 160ms ease;
 }
@@ -172,14 +172,14 @@
 [data-theme='dark'] .cf-assistant-welcome-lang-trigger {
   background: #161b22;
   border-color: #30363d;
-  color: #e6edf3;
+  color: var(--fishoj-text);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
 }
 
 .theme--dark .cf-assistant-welcome-lang-trigger:hover,
 [data-theme='dark'] .cf-assistant-welcome-lang-trigger:hover {
   background: #1c2330;
-  border-color: #4493f8;
+  border-color: var(--fishoj-blue);
 }
 
 .theme--dark .cf-assistant-welcome-lang-menu,
@@ -197,13 +197,13 @@
 .theme--dark .cf-assistant-welcome-lang-option:hover,
 [data-theme='dark'] .cf-assistant-welcome-lang-option:hover {
   background: rgba(68, 147, 248, 0.12);
-  color: #4493f8;
+  color: var(--fishoj-blue);
 }
 
 .theme--dark .cf-assistant-welcome-lang-option--selected,
 [data-theme='dark'] .cf-assistant-welcome-lang-option--selected {
   background: rgba(68, 147, 248, 0.18);
-  color: #4493f8;
+  color: var(--fishoj-blue);
 }
 
 /* header 紧凑胶囊：与「深度思考」同尺寸 */
@@ -249,7 +249,7 @@
 }
 
 .cf-assistant-welcome-lang--compact .cf-assistant-welcome-lang-trigger:hover {
-  color: var(--assistant-accent, #1677ff);
+  color: var(--assistant-accent, var(--fishoj-navy-2));
   border-color: rgba(9, 105, 218, 0.2);
   background: rgba(9, 105, 218, 0.06);
   box-shadow: none;
@@ -257,7 +257,7 @@
 
 .cf-assistant-welcome-lang--compact.cf-assistant-welcome-lang--open .cf-assistant-welcome-lang-trigger,
 .cf-assistant-welcome-lang--compact .cf-assistant-welcome-lang-trigger:focus-visible {
-  color: var(--assistant-accent, #1677ff);
+  color: var(--assistant-accent, var(--fishoj-navy-2));
   border-color: rgba(9, 105, 218, 0.35);
   background: rgba(9, 105, 218, 0.1);
   box-shadow: none;

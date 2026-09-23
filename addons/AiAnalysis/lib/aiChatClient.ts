@@ -1,6 +1,8 @@
 // ai-service.ts
 // AI 服务模块：封装与 DeepSeek API 的交互逻辑
 
+import { resolveStoredAnalysisApiKey } from './analysisSettings';
+
 // ===================== 配置与常量 =====================
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions';
 /** OpenAI SDK 用的 baseURL（不含 /chat/completions） */
@@ -28,7 +30,7 @@ export type PlatformLlmConfig = {
   chatCompletionsUrl: string;
   model: string;
   provider: 'deepseek';
-  source: 'env' | 'builtin';
+  source: 'env' | 'builtin' | 'panel';
 };
 
 /**
@@ -37,18 +39,21 @@ export type PlatformLlmConfig = {
  * （管理页 /ai-quota/admin#llm-api）。
  */
 export function resolvePlatformLlmConfig(): PlatformLlmConfig {
+  // 优先级：管理面板填写的 Key > 环境变量 > 内置占位符。
+  // 面板 Key 由「AI 分析管理」页保存，管理员改密钥不必再动服务器环境变量。
+  const panelKey = String(resolveStoredAnalysisApiKey() || '').trim();
   const envKey = String(
     process.env.DEEPSEEK_API_KEY
     || process.env.BUILTIN_API_KEY
     || '',
   ).trim();
   return {
-    apiKey: envKey || PLATFORM_API_KEY_FALLBACK,
+    apiKey: panelKey || envKey || PLATFORM_API_KEY_FALLBACK,
     baseUrl: DEEPSEEK_OPENAI_BASE_URL,
     chatCompletionsUrl: DEEPSEEK_API_URL,
     model: DEFAULT_MODEL,
     provider: 'deepseek',
-    source: envKey ? 'env' : 'builtin',
+    source: panelKey ? 'panel' : envKey ? 'env' : 'builtin',
   };
 }
 

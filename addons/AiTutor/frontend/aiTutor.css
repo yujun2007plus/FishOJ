@@ -10,21 +10,21 @@
   height: 48px;
   border: 0;
   border-radius: 50%;
-  background: #1890ff;
-  color: #fff;
+  background: var(--fishoj-blue);
+  color: var(--fishoj-surface);
   font-size: 20px;
   cursor: pointer;
   box-shadow: 0 8px 22px rgba(24, 144, 255, 0.35);
 }
-.fish-tutor__fab[data-state="hint"] { background: #fa8c16; }
-.fish-tutor__fab[data-state="ok"] { background: #52c41a; }
+.fish-tutor__fab[data-state="hint"] { background: var(--fishoj-gold-deep); }
+.fish-tutor__fab[data-state="ok"] { background: var(--fishoj-success); }
 .fish-tutor__panel {
   position: absolute;
   right: 0;
   bottom: 58px;
   width: min(340px, calc(100vw - 28px));
-  background: #fff;
-  border-radius: 14px;
+  background: var(--fishoj-surface);
+  border-radius: var(--fishoj-radius-lg);
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
   overflow: hidden;
 }
@@ -35,23 +35,27 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px;
-  background: #f0f7ff;
+  background: var(--fishoj-surface-2);
   font-weight: 650;
 }
 .theme--dark .fish-tutor__head { background: #243044; }
 .fish-tutor__close { border: 0; background: transparent; cursor: pointer; font-size: 16px; color: inherit; }
 .fish-tutor__body { padding: 12px; line-height: 1.55; white-space: pre-wrap; min-height: 80px; }
-.fish-tutor__meta { padding: 0 12px 8px; color: #64748b; font-size: 12px; }
+.fish-tutor__meta { padding: 0 12px 8px; color: var(--fishoj-text-muted); font-size: var(--fishoj-font-xs); }
 .fish-tutor__actions { display: flex; gap: 8px; padding: 0 12px 12px; flex-wrap: wrap; }
 .fish-tutor__btn {
-  border: 1px solid #dbe3ee;
-  background: #fff;
-  border-radius: 8px;
+  border: 1px solid var(--fishoj-border-input);
+  background: var(--fishoj-surface);
+  border-radius: var(--fishoj-radius-sm);
   padding: 6px 10px;
   cursor: pointer;
 }
 .theme--dark .fish-tutor__btn { background: #252526; border-color: #3c3c3c; color: inherit; }
-.fish-tutor__btn--primary { background: #1890ff; border-color: #1890ff; color: #fff; }
+.fish-tutor__btn--primary {
+  background: var(--fishoj-blue);
+  border-color: var(--fishoj-blue);
+  color: var(--fishoj-surface);
+}
 .fish-tutor__ask {
   display: flex;
   gap: 6px;
@@ -59,8 +63,8 @@
 }
 .fish-tutor__ask input {
   flex: 1;
-  border: 1px solid #dbe3ee;
-  border-radius: 8px;
+  border: 1px solid var(--fishoj-border-input);
+  border-radius: var(--fishoj-radius-sm);
   padding: 6px 8px;
 }
 .fish-tutor-offer {
@@ -69,9 +73,9 @@
   bottom: 76px;
   z-index: 100009;
   width: min(300px, calc(100vw - 28px));
-  background: #fff;
+  background: var(--fishoj-surface);
   border-radius: 12px;
-  padding: 12px;
+  padding: var(--fishoj-space-3);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
 }
 .theme--dark .fish-tutor-offer { background: #1e1e1e; color: #e8e8e8; }

@@ -16,11 +16,19 @@
         <input type="checkbox" name="enabled" value="1"{% if stored.enabled %} checked{% endif %}>
         全站启用 AI 助教（未登录用户仍不可见）
       </label>
+      <label>大模型 API Key（DeepSeek）
+        <input type="password" name="api_key" autocomplete="off" spellcheck="false"
+               placeholder="{% if apiKeyMasked %}已保存 {{ apiKeyMasked }}，留空不修改请原样提交{% else %}留空则使用环境变量 DEEPSEEK_API_KEY{% endif %}">
+        <small style="display:block;color:#8c8c8c;margin-top:4px;">
+          优先级：<strong>本页填写的 Key ＞ 环境变量</strong>。
+          {% if apiKeyMasked %}当前已保存 <code>{{ apiKeyMasked }}</code>，重新输入即覆盖。{% else %}当前未配置面板密钥，正在回退环境变量。{% endif %}
+        </small>
+      </label>
       <p><button type="submit" class="rounded primary button">保存</button></p>
     </form>
     <h2>运行概况</h2>
     <ul>
-      <li>平台 LLM Key：{% if llmConfigured %}<span style="color:#389e0d">已配置</span>{% else %}<span style="color:#cf1322">未检测到 DEEPSEEK_API_KEY / BUILTIN_API_KEY</span>{% endif %}</li>
+      <li>平台 LLM Key：{% if llmConfigured %}<span style="color:#389e0d">已配置</span>（来源：{% if apiKeySource == 'panel' %}管理面板{% else %}环境变量{% endif %}）{% else %}<span style="color:#cf1322">未检测到可用密钥</span>{% endif %}</li>
       <li>历史对话文档数：{{ conversationCount }}</li>
     </ul>
     <h2>LLM 与限频</h2>

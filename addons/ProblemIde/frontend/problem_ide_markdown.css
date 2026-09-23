@@ -311,7 +311,7 @@
 }
 
 .problem-ide-left__scroll .problem-ide-sample-toolbar__btn:hover {
-  color: #1890ff;
+  color: var(--fishoj-blue);
 }
 
 .problem-ide-left__scroll .toolbar,
