@@ -22,6 +22,18 @@ import './tags_sidebar';
 if (typeof document !== 'undefined') {
     document.documentElement.classList.remove('is-loading');
     document.documentElement.classList.add('is-loaded');
+    // 标签页品牌：模板已输出 FishOJ 标题，这里兜底前端脚本二次改写的情况
+    const brandTabTitle = () => {
+        const raw = document.title || '';
+        let next = raw.replace(/HydroOJ/g, 'FishOJ').replace(/(^|[\s\-·|])Hydro$/, '$1FishOJ');
+        if (!/FishOJ/.test(next)) next = next ? `${next} · FishOJ` : 'FishOJ';
+        if (next !== raw) document.title = next;
+    };
+    brandTabTitle();
+    const titleEl = document.querySelector('title');
+    if (titleEl && typeof MutationObserver !== 'undefined') {
+        new MutationObserver(brandTabTitle).observe(titleEl, { childList: true, characterData: true, subtree: true });
+    }
     // /discuss/create 会被官方当成帖子 id，点到即 ValidationError
     document.addEventListener('click', (ev) => {
         const a = (ev.target as Element | null)?.closest?.('a');
