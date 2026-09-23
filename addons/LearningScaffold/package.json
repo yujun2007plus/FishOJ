@@ -2,5 +2,13 @@
   "name": "fishoj-learning-scaffold",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "ts-node --transpile-only --project tsconfig.test.json lib/scaffoldParse.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
 }

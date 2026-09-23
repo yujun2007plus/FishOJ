@@ -1,0 +1,39 @@
+{% extends "manage_base.html" %}
+{% block manage_content %}
+<div class="section">
+  <div class="section__header">
+    <h1 class="section__title">{{ _('manage_scaffold') }}</h1>
+  </div>
+  <div class="section__body">
+    <p>在这里配置<strong>脚手架生成器</strong>调用的模型服务。密钥只保存在服务端，学生不可见。留空密钥并保存，将<strong>保留已有密钥</strong>。</p>
+    <p>按题生成 / 配置脚手架 → 「<a href="{{ url('manage_coding_assist') }}">辅助编码管理</a>」；按题开关小助手 / 助教 / 分析也在同一处。</p>
+    {% if fromEnv.apiKey or fromEnv.baseUrl or fromEnv.model %}
+    <blockquote class="note">
+      当前有环境变量覆盖本页配置：
+      {% if fromEnv.apiKey %}FISHOJ_AI_API_KEY / OPENAI_API_KEY / DEEPSEEK_API_KEY / BUILTIN_API_KEY{% endif %}
+      {% if fromEnv.baseUrl %}FISHOJ_AI_BASE_URL{% endif %}
+      {% if fromEnv.model %}FISHOJ_AI_MODEL{% endif %}
+      。实际生效：{{ effectiveBase }} · {{ effectiveModel }}
+    </blockquote>
+    {% endif %}
+    <form method="post">
+      <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">
+      <div class="row">
+        <div class="medium-12 columns">
+          <label>API Base URL
+            <input type="text" name="base_url" value="{{ stored.baseUrl }}" placeholder="https://api.deepseek.com/v1">
+          </label>
+          <label>模型名
+            <input type="text" name="model" value="{{ stored.model }}" placeholder="deepseek-v4-flash">
+          </label>
+          <label>服务端 API 密钥{% if apiKeySet %}（已保存 {{ apiKeyMasked }}）{% endif %}
+            <input type="password" name="api_key" value="" autocomplete="new-password" placeholder="{% if apiKeySet %}不修改请留空{% else %}sk-…{% endif %}">
+          </label>
+        </div>
+      </div>
+      <button type="submit" class="rounded primary button">保存</button>
+    </form>
+    <p class="help-text">未配置密钥时，脚手架生成会直接报错并提示管理员，不影响学生做题与自测。</p>
+  </div>
+</div>
+{% endblock %}

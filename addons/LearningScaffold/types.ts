@@ -47,4 +47,9 @@ declare module 'hydrooj' {
         fish_learning_scaffold: LearningScaffoldDoc;
         fish_learning_choice: LearningChoiceDoc;
     }
+    interface SystemKeys {
+        'fishoj.scaffold.api_key': string;
+        'fishoj.scaffold.base_url': string;
+        'fishoj.scaffold.model': string;
+    }
 }

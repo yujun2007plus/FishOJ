@@ -20,6 +20,10 @@
     {% endif %}
     <p><a href="{{ url('manage_problem_solution_edit', pid=pid) }}">{% if hasTextSol %}编辑官方题解{% else %}编写官方题解{% endif %}</a></p>
     <h2>2. 本题教学配置</h2>
+    <p>
+      <button type="button" id="scaffoldGenerateBtn" class="rounded primary button">✨ 生成脚手架（需有官方题解为佳）</button>
+      <span id="scaffoldGenerateStatus" class="help-text" style="display:inline-block;margin-left:8px;color:#5b6b85"></span>
+    </p>
     <form method="post">
       <input type="hidden" name="csrfToken" value="{{ handler.csrfToken }}">
       <button type="submit" name="operation" value="fill_demo" class="rounded primary button">填入「三数最大值」示例</button>
