@@ -137,3 +137,267 @@ a:hover {
   color: var(--fishoj-blue) !important;
   border-color: var(--fishoj-blue) !important;
 }
+
+/* 管理页：沿用首页的深海蓝、鎏金与轻量卡片语言 */
+.fishoj-manage {
+  max-width: 1040px;
+  margin: 24px auto 48px;
+  color: #1c2b4a;
+}
+
+.fishoj-manage > .section__header {
+  margin-bottom: 16px;
+}
+
+.fishoj-manage > .section__header .section__title {
+  margin: 0;
+  color: #0b2447;
+  border-bottom-color: #ffc45e !important;
+}
+
+.fishoj-manage__body {
+  padding: 28px !important;
+  border: 1px solid rgba(23, 42, 84, 0.09);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #fff 0%, #fbfdff 100%);
+  box-shadow: 0 14px 34px -16px rgba(23, 42, 84, 0.18);
+}
+
+.fishoj-manage__intro {
+  margin: 0 0 24px;
+  color: #5b6b8c;
+  line-height: 1.75;
+}
+
+.fishoj-manage__toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 18px;
+  margin-bottom: 28px;
+  border: 1px solid #d9e4ff;
+  border-radius: 14px;
+  background: #f6f9ff;
+}
+
+.fishoj-manage__toolbar .fishoj-manage__field {
+  flex: 1;
+  margin: 0;
+}
+
+.fishoj-manage__toolbar input,
+.fishoj-manage__form input,
+.fishoj-manage textarea {
+  border-color: #d7dfed !important;
+  border-radius: 10px !important;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.fishoj-manage__toolbar input:focus,
+.fishoj-manage__form input:focus,
+.fishoj-manage textarea:focus {
+  border-color: #2f6bff !important;
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, .12) !important;
+}
+
+.fishoj-manage__subtitle {
+  margin: 0 0 14px;
+  color: #19376d;
+  font-size: 19px;
+}
+
+.fishoj-manage .data-table {
+  overflow: hidden;
+  border: 1px solid #e6ebf3;
+  border-radius: 12px;
+}
+
+.fishoj-manage .data-table th {
+  color: #19376d;
+  background: #f6f9ff;
+}
+
+.fishoj-manage__status {
+  display: inline-flex;
+  padding: 3px 9px;
+  border-radius: 999px;
+  color: #6b7280;
+  background: #f1f3f6;
+  font-size: 12px;
+}
+
+.fishoj-manage__status.is-on {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.fishoj-manage__link { font-weight: 600; }
+
+.fishoj-manage__empty {
+  padding: 34px 20px;
+  color: #7a879f;
+  text-align: center;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #fafcff;
+}
+
+.fishoj-manage__notice {
+  margin: 0 0 22px !important;
+  border-left: 4px solid #ffc45e !important;
+  border-radius: 0 12px 12px 0;
+  background: #fffbeb !important;
+}
+
+.fishoj-manage__field {
+  color: #33456b;
+  font-weight: 600;
+}
+
+.fishoj-manage__field input { margin-top: 7px; font-weight: 400; }
+.fishoj-manage__help { margin: 20px 0 0; line-height: 1.7; }
+.fishoj-manage__breadcrumb { margin: 0 0 20px; color: #8490a6; }
+.fishoj-manage__breadcrumb a { font-weight: 600; }
+.fishoj-manage__demo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 26px;
+  padding: 16px 18px;
+  border: 1px solid #fde3a7;
+  border-radius: 14px;
+  background: #fffbeb;
+}
+.fishoj-manage__demo strong,
+.fishoj-manage__demo span { display: block; }
+.fishoj-manage__demo strong { color: #92400e; }
+.fishoj-manage__demo span { margin-top: 3px; color: #9a6b24; font-size: 13px; }
+.fishoj-manage__switches {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 28px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f6f9ff;
+  color: #33456b;
+  font-weight: 600;
+}
+.fishoj-manage__editor > p { margin-bottom: 7px; color: #33456b; font-weight: 600; }
+.fishoj-manage__editor > p small { color: #8793a8; font-weight: 400; }
+.fishoj-manage__editor textarea { width: 100%; font-family: inherit; }
+.fishoj-manage__editor .fishoj-manage__subtitle { margin-top: 30px; padding-top: 22px; border-top: 1px solid #e8edf5; }
+
+@media (max-width: 640px) {
+  .fishoj-manage { margin-top: 14px; }
+  .fishoj-manage__body { padding: 20px 16px !important; }
+  .fishoj-manage__toolbar { align-items: stretch; flex-direction: column; }
+  .fishoj-manage__toolbar .button { width: 100%; }
+  .fishoj-manage__demo { align-items: stretch; flex-direction: column; }
+  .fishoj-manage__switches { align-items: flex-start; flex-direction: column; gap: 10px; }
+}
+/* ============================================================
+   FishOJ 深海鎏金 · UI 创新补充 Token（叠加于 v3 基线，不改动原 :root）
+   来源：FishOjTheme/frontend/theme.css（fork/main），仅补充缺失变量
+   ============================================================ */
+
+/* —— 亮色补充（含明暗共用几何/品牌 + 亮色语义）—— */
+:root {
+  --fishoj-gold: #ffc45e !important;
+  --fishoj-gold-deep: #f97316 !important;
+  --fishoj-navy: #0b2447 !important;
+  --fishoj-navy-2: #19376d !important;
+  --fishoj-blue: #2f6bff !important;
+  --fishoj-blue-soft: #69b1ff !important;
+  --fishoj-space-1: 4px;
+  --fishoj-space-2: 8px;
+  --fishoj-space-3: 12px;
+  --fishoj-space-4: 16px;
+  --fishoj-space-5: 20px;
+  --fishoj-space-6: 24px;
+  --fishoj-space-8: 32px;
+  --fishoj-space-10: 40px;
+  --fishoj-space-12: 48px;
+  --fishoj-radius-xs: 6px;
+  --fishoj-radius-sm: 8px;
+  --fishoj-radius-md: 10px;
+  --fishoj-radius-lg: 14px;
+  --fishoj-radius-xl: 20px;
+  --fishoj-radius-pill: 999px;
+  --fishoj-font-xs: 12px;
+  --fishoj-font-sm: 13px;
+  --fishoj-font-md: 14px;
+  --fishoj-font-lg: 17px;
+  --fishoj-font-xl: 19px;
+  --fishoj-font-2xl: 24px;
+  --fishoj-leading: 1.7;
+  --fishoj-duration-fast: 0.15s;
+  --fishoj-duration-base: 0.2s;
+  --fishoj-duration-slow: 0.3s;
+  --fishoj-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --fishoj-bg: #f6f8fc !important;
+  --fishoj-surface: #ffffff !important;
+  --fishoj-surface-2: #f6f9ff !important;
+  --fishoj-surface-3: #f1f3f6 !important;
+  --fishoj-border: rgba(23, 42, 84, 0.09) !important;
+  --fishoj-border-soft: #e8edf5 !important;
+  --fishoj-border-strong: #d9e4ff !important;
+  --fishoj-border-input: #d7dfed !important;
+  --fishoj-border-dashed: #cbd5e1 !important;
+  --fishoj-border-table: #e6ebf3 !important;
+  --fishoj-text: #1c2b4a !important;
+  --fishoj-text-strong: #33456b !important;
+  --fishoj-text-muted: #5b6b8c !important;
+  --fishoj-text-faint: #7a879f !important;
+  --fishoj-gold-soft: #fffbeb !important;
+  --fishoj-gold-soft-border: #fde3a7 !important;
+  --fishoj-gold-ink: #92400e !important;
+  --fishoj-gold-ink-2: #9a6b24 !important;
+  --fishoj-success: #166534 !important;
+  --fishoj-success-soft: #dcfce7 !important;
+  --fishoj-shadow-card: 0 14px 34px -16px rgba(23, 42, 84, 0.18) !important;
+  --fishoj-shadow-hover: 0 6px 22px rgba(47, 107, 255, 0.18) !important;
+  --fishoj-focus-ring: 0 0 0 3px rgba(47, 107, 255, 0.12) !important;
+}
+
+/* —— 暗色补充（仅覆盖明暗不同的语义色）—— */
+.theme--dark,
+  [data-mantine-color-scheme="dark"] {
+  --fishoj-bg: #0a1424 !important;
+  --fishoj-surface: #101d33 !important;
+  --fishoj-blue-soft: #9cc4ff !important;
+  --fishoj-surface-2: #14243d !important;
+  --fishoj-surface-3: #182a47 !important;
+  --fishoj-border: rgba(255, 255, 255, 0.09) !important;
+  --fishoj-border-soft: rgba(255, 255, 255, 0.07) !important;
+  --fishoj-border-strong: rgba(255, 196, 94, 0.22) !important;
+  --fishoj-border-input: #22375a !important;
+  --fishoj-border-dashed: #2c4468 !important;
+  --fishoj-border-table: rgba(255, 255, 255, 0.08) !important;
+  --fishoj-text: #e6eefc !important;
+  --fishoj-text-strong: #cdd9f0 !important;
+  --fishoj-text-muted: #93a6c9 !important;
+  --fishoj-text-faint: #6f83a8 !important;
+  --fishoj-gold-soft: rgba(255, 196, 94, 0.10) !important;
+  --fishoj-gold-soft-border: rgba(255, 196, 94, 0.30) !important;
+  --fishoj-gold-ink: #ffd98a !important;
+  --fishoj-gold-ink-2: var(--fishoj-gold) !important;
+  --fishoj-success: #4ade80 !important;
+  --fishoj-success-soft: rgba(74, 222, 128, 0.14) !important;
+  --fishoj-shadow-card: 0 14px 34px -16px rgba(0, 0, 0, 0.55) !important;
+  --fishoj-shadow-hover: 0 8px 26px rgba(255, 196, 94, 0.16) !important;
+  --fishoj-focus-ring: 0 0 0 3px rgba(255, 196, 94, 0.18) !important;
+}
+
+/* —— 补充：gold-2 / text-2 / text-3（gilded 文件引用但此前未定义，此处补齐以统一主题）—— */
+:root {
+  --fishoj-gold-2: #e6c877;
+  --fishoj-text-2: #5a6a8a;
+  --fishoj-text-3: #8d9ab5;
+}
+.theme--dark,
+  [data-mantine-color-scheme="dark"] {
+  --fishoj-gold-2: #ffd98a;
+  --fishoj-text-2: #9aa7c2;
+  --fishoj-text-3: #7c8db0;
+}

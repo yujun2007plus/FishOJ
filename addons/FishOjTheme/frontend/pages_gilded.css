@@ -1,0 +1,77 @@
+/* ============================================================
+   FishOJ · 深海鎏金 · 通用共享覆盖层（pages_gilded.css）
+   作用：全站公共壳组件（表格 / 输入框 / 警示条 / 侧栏菜单激活态）
+   边界：题库列表页(problem_main) 由 yujun 负责，此处不覆盖它的
+        专属样式；卡片形状变化放到各页专属 *_gilded.css 中。
+   原则：仅覆盖 Hydro 稳定语义类，不改 DOM、不改内核；
+         全部 !important，最坏回退为原生样式。
+   ============================================================ */
+
+/* —— 表格行 hover 鎏金高亮（通用） —— */
+.data-table tbody tr {
+  transition: background-color var(--fishoj-duration-fast) var(--fishoj-ease),
+              box-shadow var(--fishoj-duration-fast) var(--fishoj-ease);
+}
+.data-table tbody tr:hover {
+  background-color: var(--fishoj-gold-soft) !important;
+  box-shadow: inset 3px 0 0 var(--fishoj-gold) !important;
+}
+
+/* —— 输入框 / 下拉 / 文本域 聚焦淡金描边（通用） —— */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--fishoj-gold) !important;
+  box-shadow: 0 0 0 3px rgba(255, 196, 94, 0.18) !important;
+}
+
+/* —— 警示条柔化为暖琥珀（保留警示语义，不再刺眼） —— */
+.message--warning,
+.message--error,
+.message--danger,
+[class*="alert"]:not(button):not(.badge) {
+  background: var(--fishoj-gold-soft) !important;
+  border: 1px solid var(--fishoj-gold-soft-border) !important;
+  border-left: 4px solid var(--fishoj-gold-deep) !important;
+  border-radius: var(--fishoj-radius-md) !important;
+  color: var(--fishoj-gold-ink) !important;
+}
+.theme--dark .message--warning,
+.theme--dark .message--error,
+.theme--dark .message--danger,
+.theme--dark [class*="alert"]:not(button):not(.badge),
+[data-mantine-color-scheme="dark"] .message--warning,
+[data-mantine-color-scheme="dark"] .message--error,
+[data-mantine-color-scheme="dark"] .message--danger,
+[data-mantine-color-scheme="dark"] [class*="alert"]:not(button):not(.badge) {
+  background: rgba(255, 196, 94, 0.10) !important;
+  border-color: rgba(255, 196, 94, 0.30) !important;
+  border-left: 4px solid var(--fishoj-gold) !important;
+  color: #ffd98a !important;
+}
+
+/* —— 侧栏菜单激活态（详情页通用） —— */
+.side .menu__item--active > .menu__link,
+.menu .menu__item--active > .menu__link,
+.side a.active,
+.menu a.active {
+  color: var(--fishoj-gold-deep) !important;
+  box-shadow: inset 3px 0 0 var(--fishoj-gold) !important;
+  background: var(--fishoj-gold-soft) !important;
+}
+.side .menu__link:hover,
+.menu .menu__link:hover {
+  color: var(--fishoj-gold-deep) !important;
+  background: var(--fishoj-gold-soft) !important;
+}
+.theme--dark .side .menu__item--active > .menu__link,
+.theme--dark .menu .menu__item--active > .menu__link,
+.theme--dark .side a.active,
+.theme--dark .menu a.active,
+[data-mantine-color-scheme="dark"] .side .menu__item--active > .menu__link,
+[data-mantine-color-scheme="dark"] .menu .menu__item--active > .menu__link,
+[data-mantine-color-scheme="dark"] .side a.active,
+[data-mantine-color-scheme="dark"] .menu a.active {
+  background: rgba(255, 196, 94, 0.10) !important;
+  color: #ffd98a !important;
+}

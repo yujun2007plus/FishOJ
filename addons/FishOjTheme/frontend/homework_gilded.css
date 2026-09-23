@@ -1,0 +1,111 @@
+/* ============================================================
+   FishOJ · 深海鎏金 · 作业页专属覆盖层（homework_gilded.css）
+   真实 DOM（已对照线上）：
+     <li class="section__list__item homework__item">
+       <div class="media">
+         <div class="media__left medium"> <-- 日期 numbox (.homework__date)
+         <div class="media__body medium"> <-- title / supplementary
+   改造点（明显变化）：
+     ① 横向 media 长条 → 竖版鎏金卡片
+     ② 日期块 → 右上角鎏金角标
+     ③ 顶部过滤条圆角 + 鎏金描边
+     ④ hover 上浮 + 金光
+   ============================================================ */
+
+.homework__item {
+  position: relative !important;
+  display: block !important;
+  margin: 0 0 18px !important;
+  padding: 22px 22px 18px !important;
+  background: var(--fishoj-surface) !important;
+  border: 1px solid var(--fishoj-border) !important;
+  border-radius: var(--fishoj-radius-lg) !important;
+  box-shadow: var(--fishoj-shadow-card) !important;
+  overflow: hidden !important;
+  transition: transform var(--fishoj-duration-base) var(--fishoj-ease),
+              box-shadow var(--fishoj-duration-base) var(--fishoj-ease),
+              border-color var(--fishoj-duration-base) var(--fishoj-ease);
+}
+.homework__item::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0; left: 0; right: 0;
+  height: 4px !important;
+  background: linear-gradient(90deg, var(--fishoj-gold), var(--fishoj-gold-deep)) !important;
+}
+.homework__item .media { display: block !important; }
+.homework__item .media__left {
+  display: inline-flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  float: right !important;
+  margin: 0 0 10px 14px !important;
+  padding: 8px 14px !important;
+  border-radius: var(--fishoj-radius-md) !important;
+  background: var(--fishoj-gold-soft) !important;
+  border: 1px solid var(--fishoj-gold-soft-border) !important;
+}
+.homework__item .homework__date .numbox__num {
+  color: var(--fishoj-gold-ink) !important;
+  font-weight: 800 !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+}
+.homework__item .homework__date .numbox__text {
+  color: var(--fishoj-gold-ink-2) !important;
+  font-size: 11px !important;
+}
+.homework__item .media__body { display: block !important; }
+.homework__item .homework__title {
+  font-size: var(--fishoj-font-2xl) !important;
+  line-height: 1.3 !important;
+  margin: 2px 0 10px !important;
+}
+.homework__item .homework__title a { color: var(--fishoj-navy) !important; }
+.homework__item .homework__title a:hover { color: var(--fishoj-gold-deep) !important; }
+.homework__item .supplementary { margin-top: 12px !important; color: var(--fishoj-text-muted) !important; }
+.homework__item:hover {
+  transform: translateY(-5px) !important;
+  border-color: var(--fishoj-gold) !important;
+  box-shadow: 0 20px 42px -18px rgba(255, 196, 94, 0.5) !important;
+}
+
+/* —— 区块标题鎏金前缀 —— */
+body.page--homework_main .section__title {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  padding-left: 14px !important;
+  position: relative !important;
+  border-bottom: 2px solid var(--fishoj-gold) !important;
+}
+body.page--homework_main .section__title::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0; top: 4px; bottom: 6px;
+  width: 5px !important;
+  border-radius: 3px !important;
+  background: linear-gradient(180deg, var(--fishoj-gold), var(--fishoj-gold-deep)) !important;
+}
+
+/* —— 顶部过滤条：圆角 + 鎏金描边 —— */
+body.page--homework_main .section__tools,
+body.page--homework_main .section__header .row,
+.homework .section--filter,
+.homework-list .section--filter {
+  border: 1px solid var(--fishoj-border-strong) !important;
+  border-radius: var(--fishoj-radius-md) !important;
+  background: var(--fishoj-surface) !important;
+  padding: 12px 14px !important;
+}
+
+/* —— 暗色适配 —— */
+.theme--dark .homework__item,
+[data-mantine-color-scheme="dark"] .homework__item {
+  background: var(--fishoj-surface) !important;
+  border-color: var(--fishoj-border) !important;
+}
+.theme--dark .homework__item .homework__title a,
+[data-mantine-color-scheme="dark"] .homework__item .homework__title a {
+  color: var(--fishoj-text) !important;
+}

@@ -1,0 +1,239 @@
+/* ============================================================
+   FishOJ · 深海鎏金 · 比赛页专属覆盖层（contest_gilded.css）
+   真实 DOM（已对照线上）：
+     <li class="section__list__item contest__item contest-type--acm">
+       <div class="media">
+         <div class="media__left medium"> .contest__date(.numbox__num/.numbox__text)
+         <div class="media__body medium"> .contest__title / .supplementary(.contest-type-tag)
+   改造点（明显变化）：
+     ① 横向 media 长条 → 左侧深蓝日期块 + 右侧内容（flex）
+     ② 顶部鎏金条 + hover 金光上浮
+     ③ 三态状态徽标（未开始倒计时 / LIVE脉冲+进度条 / 已结束）—— 由 contest_status.ts 注入
+     ④ 赛制分色（XCPC金 / OI蓝 / IOI绿）
+     ⑤ RATED 火焰徽标 + 人数热门
+   ============================================================ */
+
+.contest__item {
+  position: relative !important;
+  display: block !important;
+  margin: 0 0 18px !important;
+  padding: 22px 22px 18px !important;
+  background: var(--fishoj-surface) !important;
+  border: 1px solid var(--fishoj-border) !important;
+  border-radius: var(--fishoj-radius-lg) !important;
+  box-shadow: var(--fishoj-shadow-card) !important;
+  overflow: hidden !important;
+  transition: transform var(--fishoj-duration-base) var(--fishoj-ease),
+              box-shadow var(--fishoj-duration-base) var(--fishoj-ease),
+              border-color var(--fishoj-duration-base) var(--fishoj-ease);
+}
+/* 顶部鎏金条 */
+.contest__item::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0; left: 0; right: 0;
+  height: 4px !important;
+  background: linear-gradient(90deg, var(--fishoj-gold), var(--fishoj-gold-deep)) !important;
+}
+
+/* —— media 改为 flex：左日期块 + 右内容 —— */
+.contest__item .media {
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 18px !important;
+}
+.contest__item .media__left {
+  float: none !important;
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+  width: 86px !important;
+  min-height: 86px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 6px !important;
+  border-radius: var(--fishoj-radius-md) !important;
+  background: linear-gradient(160deg, var(--fishoj-navy), #1d3468) !important;
+  border: none !important;
+}
+.contest__item .contest__date .numbox__num {
+  color: var(--fishoj-gold-2, #e6c877) !important;
+  font-weight: 800 !important;
+  font-size: 30px !important;
+  line-height: 1 !important;
+}
+.contest__item .contest__date .numbox__text {
+  color: #cfe0ff !important;
+  font-size: 12px !important;
+  letter-spacing: 1px !important;
+  margin-top: 6px !important;
+}
+.contest__item .media__body {
+  display: block !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+.contest__item .contest__title {
+  font-size: var(--fishoj-font-2xl) !important;
+  line-height: 1.3 !important;
+  margin: 0 0 10px !important;
+}
+.contest__item .contest__title a { color: var(--fishoj-navy) !important; }
+.contest__item .contest__title a:hover { color: var(--fishoj-gold-deep) !important; }
+
+/* supplementary 内原始徽标统一成小药丸 */
+.contest__item .supplementary {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-top: 12px !important;
+}
+.contest__item .supplementary .contest-type-tag {
+  margin: 0 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 3px 10px !important;
+  border-radius: var(--fishoj-radius-pill) !important;
+  background: var(--fishoj-gold-soft) !important;
+  color: var(--fishoj-gold-ink) !important;
+  border: 1px solid var(--fishoj-gold-soft-border) !important;
+}
+
+/* —— 赛制分色（优先级高于原始红→金兜底） —— */
+.contest__item .fish-rule--acm {
+  background: #f7edd6 !important; color: #8a6a1c !important; border-color: #e6c877 !important;
+}
+.contest__item .fish-rule--oi {
+  background: #e3ecfb !important; color: #2c55a8 !important; border-color: #b9cdf2 !important;
+}
+.contest__item .fish-rule--ioi {
+  background: #e2f3ea !important; color: #2c7a4b !important; border-color: #b4e0c6 !important;
+}
+.contest__item .fish-rule--homework {
+  background: #f0eafc !important; color: #5b3aa6 !important; border-color: #d6c8f2 !important;
+}
+
+/* —— RATED 火焰 —— */
+.contest__item .fish-rated {
+  background: #fdeee9 !important; color: #c2452f !important; border-color: #f3c0b5 !important;
+}
+.contest__item .fish-rated .fish-flame,
+.contest__item .fish-rated { font-weight: 700 !important; }
+
+/* —— 人数 / 热门 —— */
+.contest__item .fish-people {
+  background: #eef1f7 !important; color: var(--fishoj-text-muted) !important; border-color: transparent !important;
+}
+.contest__item .fish-people.fish-hot {
+  background: #fff3e0 !important; color: #b06a12 !important; border-color: #f3d6a8 !important;
+}
+
+/* —— 状态徽标（contest_status.ts 注入） —— */
+.fish-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.6 !important;
+  padding: 4px 12px !important;
+  border-radius: var(--fishoj-radius-pill) !important;
+  color: #fff !important;
+  border: none !important;
+}
+.fish-state--coming { background: linear-gradient(135deg, #3a6fd8, #2c55a8) !important; }
+.fish-state--live  { background: linear-gradient(135deg, #d8554f, #b53a35) !important; }
+.fish-state--over  { background: #c4cbda !important; color: #fff !important; }
+.fish-dot {
+  width: 7px !important; height: 7px !important; border-radius: 50% !important;
+  background: #fff !important; display: inline-block !important;
+  animation: fish-pulse 1.2s infinite !important;
+}
+@keyframes fish-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.6); }
+}
+.fish-ico { font-size: 13px !important; }
+
+/* —— LIVE 进度条 —— */
+.fish-live-bar {
+  margin-top: 12px !important;
+  height: 6px !important;
+  border-radius: 999px !important;
+  background: #eef1f7 !important;
+  overflow: hidden !important;
+}
+.fish-live-bar > i {
+  display: block !important;
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, var(--fishoj-gold-2, #e6c877), var(--fishoj-gold), #e08b4a) !important;
+  background-size: 200% 100% !important;
+  animation: fish-shine 2.5s linear infinite !important;
+}
+@keyframes fish-shine {
+  0% { background-position: 0 0; }
+  100% { background-position: 200% 0; }
+}
+.fish-live-meta {
+  display: flex !important;
+  justify-content: space-between !important;
+  font-size: 11px !important;
+  color: var(--fishoj-text-muted) !important;
+  margin-top: 5px !important;
+}
+
+/* —— 区块标题鎏金前缀 —— */
+body.page--contest_main .section__title {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  padding-left: 14px !important;
+  position: relative !important;
+  border-bottom: 2px solid var(--fishoj-gold) !important;
+}
+body.page--contest_main .section__title::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0; top: 4px; bottom: 6px;
+  width: 5px !important;
+  border-radius: 3px !important;
+  background: linear-gradient(180deg, var(--fishoj-gold), var(--fishoj-gold-deep)) !important;
+}
+
+/* —— 暗色适配 —— */
+.theme--dark .contest__item,
+[data-mantine-color-scheme="dark"] .contest__item {
+  background: var(--fishoj-surface) !important;
+  border-color: var(--fishoj-border) !important;
+}
+.theme--dark .contest__item .contest__title a,
+[data-mantine-color-scheme="dark"] .contest__item .contest__title a {
+  color: var(--fishoj-text) !important;
+}
+.theme--dark .contest__item .fish-rule--acm,
+[data-mantine-color-scheme="dark"] .contest__item .fish-rule--acm {
+  background: rgba(230,200,119,.16) !important; color: #ffd98a !important; border-color: rgba(230,200,119,.34) !important;
+}
+.theme--dark .contest__item .fish-rule--oi,
+[data-mantine-color-scheme="dark"] .contest__item .fish-rule--oi {
+  background: rgba(58,111,216,.18) !important; color: #9dc0ff !important; border-color: rgba(58,111,216,.4) !important;
+}
+.theme--dark .contest__item .fish-rule--ioi,
+[data-mantine-color-scheme="dark"] .contest__item .fish-rule--ioi {
+  background: rgba(63,157,99,.18) !important; color: #8fe0b0 !important; border-color: rgba(63,157,99,.4) !important;
+}
+.theme--dark .contest__item .fish-rated,
+[data-mantine-color-scheme="dark"] .contest__item .fish-rated {
+  background: rgba(210,85,79,.18) !important; color: #ff9b8f !important; border-color: rgba(210,85,79,.4) !important;
+}
+.theme--dark .contest__item .fish-people,
+[data-mantine-color-scheme="dark"] .contest__item .fish-people {
+  background: rgba(255,255,255,.06) !important; color: var(--fishoj-text-muted) !important;
+}
+.theme--dark .contest__item .fish-people.fish-hot,
+[data-mantine-color-scheme="dark"] .contest__item .fish-people.fish-hot {
+  background: rgba(255,179,71,.16) !important; color: #ffc878 !important; border-color: rgba(255,179,71,.4) !important;
+}
+.theme--dark .fish-live-bar,
+[data-mantine-color-scheme="dark"] .fish-live-bar { background: rgba(255,255,255,.08) !important; }

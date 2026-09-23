@@ -1,0 +1,312 @@
+/* ============================================================
+   FishOJ · 深海鎏金 · 讨论页专属覆盖层（discussion_gilded.css）
+   真实 DOM（已对照线上）：
+     body.page--discussion_main
+     .section / .section__header / .section__title / .section__body
+     .group-list（节点列表容器）
+   说明：讨论节点需管理员在 /manage 创建；本样式只负责“壳”，
+        节点为空时给出友好引导，不影响功能。
+   改造点（明显变化）：
+     ① 讨论节点 → 方块磁贴（左侧鎏金条 + 大圆角）
+     ② 区块标题鎏金前缀
+     ③ 空状态（无节点）居中鎏金虚线引导
+   ============================================================ */
+
+/* —— 讨论节点：方块磁贴 + 左侧鎏金条 —— */
+body.page--discussion_main .section__list__item,
+body.page--discussion_main .group-list > * {
+  position: relative !important;
+  display: block !important;
+  margin: 0 0 16px !important;
+  padding: 18px 20px 16px !important;
+  background: var(--fishoj-surface) !important;
+  border: 1px solid var(--fishoj-border) !important;
+  border-radius: var(--fishoj-radius-lg) !important;
+  box-shadow: var(--fishoj-shadow-card) !important;
+  overflow: hidden !important;
+  transition: transform var(--fishoj-duration-base) var(--fishoj-ease),
+              box-shadow var(--fishoj-duration-base) var(--fishoj-ease),
+              border-color var(--fishoj-duration-base) var(--fishoj-ease);
+}
+body.page--discussion_main .section__list__item::before,
+body.page--discussion_main .group-list > *::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0; bottom: 0; left: 0;
+  width: 4px !important;
+  background: linear-gradient(180deg, var(--fishoj-gold), var(--fishoj-gold-deep)) !important;
+}
+body.page--discussion_main .section__list__item:hover,
+body.page--discussion_main .group-list > *:hover {
+  transform: translateY(-4px) !important;
+  border-color: var(--fishoj-gold) !important;
+  box-shadow: 0 18px 38px -16px rgba(255, 196, 94, 0.45) !important;
+}
+body.page--discussion_main .section__list__item a,
+body.page--discussion_main .group-list a {
+  color: var(--fishoj-navy) !important;
+  font-weight: 700 !important;
+  font-size: var(--fishoj-font-lg) !important;
+}
+body.page--discussion_main .section__list__item a:hover,
+body.page--discussion_main .group-list a:hover {
+  color: var(--fishoj-gold-deep) !important;
+}
+
+/* —— 区块标题鎏金前缀 —— */
+body.page--discussion_main .section__title {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  padding-left: 14px !important;
+  position: relative !important;
+  border-bottom: 2px solid var(--fishoj-gold) !important;
+}
+body.page--discussion_main .section__title::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0; top: 4px; bottom: 6px;
+  width: 5px !important;
+  border-radius: 3px !important;
+  background: linear-gradient(180deg, var(--fishoj-gold), var(--fishoj-gold-deep)) !important;
+}
+
+/* —— 空状态（无节点 / 暂无讨论）：居中鎏金虚线引导 —— */
+body.page--discussion_main .nothing,
+body.page--discussion_main .empty-line {
+  margin: 0 auto !important;
+  max-width: 480px !important;
+  text-align: center !important;
+  border: 1px dashed var(--fishoj-gold-soft-border) !important;
+  background: var(--fishoj-gold-soft) !important;
+  border-radius: var(--fishoj-radius-lg) !important;
+  color: var(--fishoj-gold-ink) !important;
+  padding: 32px !important;
+}
+
+/* ============================================================
+   讨论页创新增强（由 discussion_status.ts 注入的 DOM）
+   ============================================================ */
+
+/* —— ① 空状态三步上手指引 —— */
+/* 防御：父级可能是 flex 横排（Hydro 空状态容器），必须显式声明占满整行，
+   否则引导卡会被挤成窄条导致文字竖排。 */
+.fish-discuss-guide {
+  display: block !important;
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  float: none !important;
+  margin: 22px auto 0 !important;
+  max-width: 760px !important;
+  background: var(--fishoj-surface) !important;
+  border: 2px dashed var(--fishoj-gold-soft-border) !important;
+  border-radius: var(--fishoj-radius-lg) !important;
+  padding: 40px 30px 32px !important;
+  text-align: center !important;
+  position: relative !important;
+  box-shadow: var(--fishoj-shadow-card) !important;
+}
+.fish-guide-bubble {
+  width: 84px; height: 84px !important;
+  margin: 0 auto 16px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(160deg, var(--fishoj-navy), var(--fishoj-navy-2, #1d3468)) !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-size: 40px !important;
+  box-shadow: 0 0 0 8px var(--fishoj-gold-soft), 0 10px 24px rgba(19, 36, 71, 0.2) !important;
+  animation: fish-bubble-float 3.4s ease-in-out infinite !important;
+}
+@keyframes fish-bubble-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.fish-guide-title {
+  font-size: 18px !important; font-weight: 800 !important;
+  color: var(--fishoj-navy) !important; margin-bottom: 6px !important;
+}
+.fish-guide-sub {
+  font-size: 13.5px !important; color: var(--fishoj-text-2, #5a6a8a) !important;
+  max-width: 520px !important; margin: 0 auto 4px !important;
+}
+.fish-guide-steps {
+  display: flex !important; gap: 14px !important; justify-content: center !important;
+  margin: 24px 0 22px !important; flex-wrap: wrap !important;
+}
+.fish-step {
+  width: 220px !important;
+  background: var(--fishoj-surface) !important;
+  border: 1px solid var(--fishoj-border) !important;
+  border-radius: 12px !important; padding: 16px 14px 14px !important;
+  text-align: left !important; position: relative !important;
+  transition: transform var(--fishoj-duration-base) var(--fishoj-ease),
+              border-color var(--fishoj-duration-base) var(--fishoj-ease) !important;
+}
+.fish-step:hover {
+  transform: translateY(-3px) !important;
+  border-color: var(--fishoj-gold) !important;
+  box-shadow: 0 14px 30px -16px rgba(255, 196, 94, 0.5) !important;
+}
+.fish-step-n {
+  position: absolute !important; top: -10px !important; left: 12px !important;
+  background: linear-gradient(135deg, var(--fishoj-gold), var(--fishoj-gold-deep)) !important;
+  color: #fff !important; font-size: 11px !important; font-weight: 800 !important;
+  width: 20px !important; height: 20px !important; border-radius: 6px !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+}
+.fish-step-ic { font-size: 20px !important; margin-bottom: 6px !important; }
+.fish-step-title { display: block !important; font-size: 13.5px !important; margin-bottom: 3px !important; color: var(--fishoj-navy) !important; }
+.fish-step-desc { font-size: 12px !important; color: var(--fishoj-text-2, #5a6a8a) !important; line-height: 1.5 !important; display: block !important; }
+.fish-step-go {
+  display: inline-block !important; margin-top: 7px !important; font-size: 12px !important;
+  color: var(--fishoj-blue, #3a6fd8) !important; font-weight: 700 !important; text-decoration: none !important;
+}
+.fish-step-go--muted { color: var(--fishoj-text-3, #8d9ab5) !important; font-weight: 600 !important; }
+.fish-guide-btn {
+  display: inline-flex !important; align-items: center !important; gap: 8px !important;
+  background: linear-gradient(135deg, var(--fishoj-navy), var(--fishoj-navy-2, #1d3468)) !important;
+  color: var(--fishoj-gold-2, #e6c877) !important; font-weight: 700 !important; font-size: 14px !important;
+  padding: 10px 26px !important; border-radius: 999px !important; text-decoration: none !important;
+  border: 1px solid rgba(230, 200, 119, 0.5) !important;
+  transition: box-shadow var(--fishoj-duration-base) var(--fishoj-ease), transform var(--fishoj-duration-base) var(--fishoj-ease) !important;
+}
+.fish-guide-btn:hover {
+  box-shadow: 0 8px 20px rgba(19, 36, 71, 0.3) !important; transform: translateY(-2px) !important;
+}
+.fish-guide-hint {
+  font-size: 12px !important; color: var(--fishoj-text-3, #8d9ab5) !important;
+  margin-top: 14px !important;
+}
+
+/* 引导卡内的子元素：禁止被父级 flex 压缩 */
+.fish-guide-title,
+.fish-guide-sub {
+  display: block !important;
+  width: auto !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+.fish-guide-steps,
+.fish-guide-btn {
+  flex: 0 0 auto !important;
+}
+
+/* 原始空状态（"目前没有讨论…"）被引导卡取代后隐藏，避免两个元素挤在一行 */
+.fish-empty-replaced {
+  display: none !important;
+}
+
+/* —— ② 右侧栏鎏金「创建讨论」卡 —— */
+.fish-create-card {
+  background: linear-gradient(160deg, var(--fishoj-navy), var(--fishoj-navy-2, #1d3468)) !important;
+  border-radius: var(--fishoj-radius-lg) !important;
+  padding: 18px !important; color: #fff !important; margin-bottom: 14px !important;
+  position: relative !important; overflow: hidden !important;
+  box-shadow: var(--fishoj-shadow-card) !important;
+}
+.fish-create-card::after {
+  content: "" !important; position: absolute !important; right: -20px !important; top: -20px !important;
+  width: 90px !important; height: 90px !important; border-radius: 50% !important;
+  background: radial-gradient(circle, rgba(230, 200, 119, 0.25), transparent 70%) !important;
+}
+.fish-create-card__title {
+  color: var(--fishoj-gold-2, #e6c877) !important; font-size: 15px !important;
+  margin-bottom: 6px !important; display: flex !important; gap: 8px !important; align-items: center !important;
+  position: relative !important; z-index: 1 !important;
+}
+.fish-create-card__desc {
+  font-size: 12.5px !important; opacity: 0.82 !important; line-height: 1.6 !important;
+  margin-bottom: 12px !important; position: relative !important; z-index: 1 !important; color: #dfe6f5 !important;
+}
+.fish-create-card__btn {
+  display: inline-flex !important; align-items: center !important; gap: 6px !important;
+  background: rgba(230, 200, 119, 0.15) !important;
+  border: 1px solid rgba(230, 200, 119, 0.5) !important;
+  color: var(--fishoj-gold-2, #e6c877) !important; font-size: 12.5px !important; font-weight: 700 !important;
+  padding: 6px 14px !important; border-radius: 999px !important; text-decoration: none !important;
+  transition: background var(--fishoj-duration-base) var(--fishoj-ease) !important;
+  position: relative !important; z-index: 1 !important;
+}
+.fish-create-card__btn:hover { background: rgba(230, 200, 119, 0.3) !important; }
+
+/* 主讨论页：各节点的快捷创建入口（Hydro 只认 /discuss/node/<id>/create） */
+.fish-create-chips {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+.fish-create-chip {
+  display: inline-block !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 5px 10px !important;
+  border-radius: var(--fishoj-radius-pill) !important;
+  background: rgba(230, 200, 119, 0.15) !important;
+  border: 1px solid rgba(230, 200, 119, 0.5) !important;
+  color: var(--fishoj-gold-2, #e6c877) !important;
+  text-decoration: none !important;
+}
+.fish-create-chip:hover {
+  background: rgba(230, 200, 119, 0.32) !important;
+}
+
+/* —— ③ 节点磁贴：彩色图标 + 计数徽标 —— */
+.fish-node-ic {
+  display: inline-flex !important; align-items: center !important; justify-content: center !important;
+  width: 30px !important; height: 30px !important; border-radius: 9px !important;
+  font-size: 16px !important; margin-right: 10px !important; flex-shrink: 0 !important;
+  background: var(--fishoj-gold-soft) !important; vertical-align: middle !important;
+}
+.fish-node-cnt {
+  float: right !important; font-size: 11px !important; color: var(--fishoj-text-3, #8d9ab5) !important;
+  background: var(--fishoj-gold-soft) !important; border-radius: 999px !important;
+  padding: 2px 8px !important; margin-left: 8px !important; font-weight: 600 !important;
+}
+/* 让节点链接成为一行对齐容器 */
+body.page--discussion_main .group-list > * a,
+body.page--discussion_main .section__list__item a {
+  display: flex !important; align-items: center !important;
+}
+
+/* —— ④ 排序 Tab（有内容后生效） —— */
+.fish-sort-tabs { display: flex !important; gap: 8px !important; margin-bottom: 14px !important; }
+.fish-sort-tab {
+  font-size: 12.5px !important; font-weight: 600 !important; padding: 5px 16px !important;
+  border-radius: 999px !important; background: var(--fishoj-surface) !important;
+  border: 1px solid var(--fishoj-border) !important; color: var(--fishoj-text-2, #5a6a8a) !important;
+  text-decoration: none !important; transition: all var(--fishoj-duration-base) var(--fishoj-ease) !important;
+}
+.fish-sort-tab--on, .fish-sort-tab:hover {
+  background: linear-gradient(135deg, var(--fishoj-navy), var(--fishoj-navy-2, #1d3468)) !important;
+  color: var(--fishoj-gold-2, #e6c877) !important; border-color: transparent !important;
+}
+
+/* —— 暗色适配 —— */
+.theme--dark .fish-discuss-guide,
+[data-mantine-color-scheme="dark"] .fish-discuss-guide,
+.theme--dark .fish-step,
+[data-mantine-color-scheme="dark"] .fish-step {
+  background: var(--fishoj-surface) !important;
+  border-color: var(--fishoj-border) !important;
+}
+.theme--dark .fish-guide-title,
+[data-mantine-color-scheme="dark"] .fish-guide-title,
+.theme--dark .fish-step-title,
+[data-mantine-color-scheme="dark"] .fish-step-title {
+  color: var(--fishoj-text) !important;
+}
+.theme--dark .fish-guide-sub,
+[data-mantine-color-scheme="dark"] .fish-guide-sub,
+.theme--dark .fish-step-desc,
+[data-mantine-color-scheme="dark"] .fish-step-desc {
+  color: var(--fishoj-text-2, #9aa7c2) !important;
+}
+.theme--dark .fish-create-card__desc,
+[data-mantine-color-scheme="dark"] .fish-create-card__desc {
+  color: #cdd6ea !important;
+}
+.theme--dark .fish-node-cnt,
+[data-mantine-color-scheme="dark"] .fish-node-cnt {
+  color: var(--fishoj-text-2, #9aa7c2) !important;
+}

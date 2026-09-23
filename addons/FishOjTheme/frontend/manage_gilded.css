@@ -1,0 +1,128 @@
+/* ============================================================
+   FishOJ 控制面板 /manage 鎏金覆盖层（manage_gilded.css）
+   ------------------------------------------------------------
+   作用域钩子：body[class*="manage"]（仅后台页命中，前台不含该串）
+   真实壳组件（已对照线上公共类）：
+     .section（模块卡片）、.section__title、.data-table、
+     input/select/textarea、.button、.menu / .menu__link
+   原则：纯 CSS 覆盖层，Hydro 内核零改动；全部 !important，
+         最坏回退为原生样式。
+   ============================================================ */
+
+/* —— 左侧导航：深海渐变 + 鎏金右描边 —— */
+body[class*="manage"] .side,
+body[class*="manage"] [class*="sidebar"],
+body[class*="manage"] .menu {
+  background: linear-gradient(180deg, #0b2447 0%, #123058 58%, #19376d 100%) !important;
+}
+body[class*="manage"] .side { border-right: 1px solid rgba(255, 196, 94, 0.30) !important; }
+
+/* 后台分组标题：鎏金弱文案 */
+body[class*="manage"] .side .section__title,
+body[class*="manage"] .menu .section__title {
+  color: rgba(255, 196, 94, 0.82) !important;
+  border-bottom: 1px solid rgba(255, 196, 94, 0.16) !important;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 14px 16px 8px !important;
+}
+
+/* 后台菜单项：圆角悬浮 + 鎏金激活态 */
+body[class*="manage"] .side .menu__link,
+body[class*="manage"] .menu .menu__link {
+  color: #dbe6ff !important;
+  border-radius: 10px;
+  margin: 2px 10px;
+  padding: 10px 12px;
+  transition: background var(--fishoj-duration-base) var(--fishoj-ease),
+              color var(--fishoj-duration-base) var(--fishoj-ease);
+}
+body[class*="manage"] .side .menu__link:hover,
+body[class*="manage"] .menu .menu__link:hover {
+  background: rgba(255, 196, 94, 0.12) !important;
+  color: var(--fishoj-gold) !important;
+}
+body[class*="manage"] .side .menu__item--active > .menu__link,
+body[class*="manage"] .side a.active,
+body[class*="manage"] .menu .menu__item--active > .menu__link,
+body[class*="manage"] .menu a.active {
+  color: var(--fishoj-gold) !important;
+  background: rgba(255, 196, 94, 0.16) !important;
+  box-shadow: inset 3px 0 0 var(--fishoj-gold) !important;
+  font-weight: 600;
+}
+
+/* —— 模块卡片方块化 —— */
+body[class*="manage"] .section {
+  border-radius: var(--fishoj-radius-lg) !important;
+  border: 1px solid var(--fishoj-border) !important;
+  box-shadow: var(--fishoj-shadow-card) !important;
+  background: var(--fishoj-surface) !important;
+  transition: transform var(--fishoj-duration-base) var(--fishoj-ease),
+              box-shadow var(--fishoj-duration-base) var(--fishoj-ease),
+              border-color var(--fishoj-duration-base) var(--fishoj-ease);
+  overflow: hidden;
+}
+body[class*="manage"] .section:hover {
+  transform: translateY(-3px);
+  border-color: var(--fishoj-gold) !important;
+  box-shadow: var(--fishoj-shadow-hover) !important;
+}
+
+/* —— 后台区块标题鎏金前缀 —— */
+body[class*="manage"] .section__title {
+  font-size: 19px !important;
+  font-weight: 800 !important;
+  padding-left: 14px !important;
+  position: relative !important;
+  border-bottom: 2px solid var(--fishoj-gold) !important;
+}
+body[class*="manage"] .section__title::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0; top: 3px; bottom: 5px;
+  width: 5px !important;
+  border-radius: 3px !important;
+  background: linear-gradient(180deg, var(--fishoj-gold), var(--fishoj-gold-deep)) !important;
+}
+
+/* —— 后台表格：表头鎏金底、隔行、hover 金 —— */
+body[class*="manage"] .data-table {
+  border-radius: var(--fishoj-radius-md) !important;
+  overflow: hidden;
+  border: 1px solid var(--fishoj-border-table) !important;
+}
+body[class*="manage"] .data-table th {
+  background: var(--fishoj-surface-2) !important;
+  color: var(--fishoj-text-strong) !important;
+  font-weight: 600;
+}
+body[class*="manage"] .data-table tbody tr:hover {
+  background-color: var(--fishoj-gold-soft) !important;
+}
+
+/* —— 后台表单：聚焦金边 —— */
+body[class*="manage"] input:focus,
+body[class*="manage"] select:focus,
+body[class*="manage"] textarea:focus {
+  border-color: var(--fishoj-blue) !important;
+  box-shadow: var(--fishoj-focus-ring) !important;
+  outline: none;
+}
+
+/* —— 后台主操作按钮：鎏金光晕 —— */
+body[class*="manage"] .button--primary,
+body[class*="manage"] .button.button--primary {
+  box-shadow: 0 6px 18px -8px rgba(255, 196, 94, 0.55) !important;
+}
+
+/* —— 暗色：侧栏保持深蓝，激活态提亮 —— */
+.theme--dark body[class*="manage"] .side,
+.theme--dark body[class*="manage"] [class*="sidebar"],
+.theme--dark body[class*="manage"] .menu,
+[data-mantine-color-scheme="dark"] body[class*="manage"] .side,
+[data-mantine-color-scheme="dark"] body[class*="manage"] [class*="sidebar"],
+[data-mantine-color-scheme="dark"] body[class*="manage"] .menu {
+  background: linear-gradient(180deg, #07111f 0%, #0d1f38 60%, #102a4a 100%) !important;
+}

@@ -1,0 +1,133 @@
+/* ============================================================
+   FishOJ 题库标签 · 三维分组样式（来源/赛事/知识点）
+   配色：来源→灰(弱)  赛事→蓝  知识点→金(重点)
+   ============================================================ */
+
+.fishoj-tag-group {
+  margin: 10px 0 !important;
+  border: 1px solid rgba(140, 150, 170, 0.22) !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.55) !important;
+  overflow: hidden !important;
+}
+html.theme--dark .fishoj-tag-group,
+[data-mantine-color-scheme="dark"] .fishoj-tag-group {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+.fishoj-tag-group__head {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+  background: transparent !important;
+  border: 0 !important;
+  font: inherit !important;
+  color: inherit !important;
+  text-align: left !important;
+}
+.fishoj-tag-group__dot {
+  width: 9px !important;
+  height: 9px !important;
+  border-radius: 50% !important;
+  flex: none !important;
+}
+.fishoj-tag-group__title {
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.04em !important;
+}
+.fishoj-tag-group__count {
+  font-size: 11px !important;
+  color: #8a93a6 !important;
+  background: rgba(140, 150, 170, 0.16) !important;
+  border-radius: 999px !important;
+  padding: 1px 7px !important;
+}
+.fishoj-tag-group__chevron {
+  margin-left: auto !important;
+  transition: transform 0.2s !important;
+  color: #8a93a6 !important;
+}
+.fishoj-tag-group.collapsed .fishoj-tag-group__chevron {
+  transform: rotate(-90deg) !important;
+}
+.fishoj-tag-group__body {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  padding: 0 12px 12px !important;
+}
+.fishoj-tag-group.collapsed .fishoj-tag-group__body {
+  display: none !important;
+}
+
+/* 标签 chip 基础（覆盖 Hydro 默认 tag 配色） */
+.fishoj-tag-group__body > * {
+  display: inline-flex !important;
+  align-items: center !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  padding: 3px 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid transparent !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  transition: all 0.15s !important;
+}
+.fishoj-tag__prefix {
+  opacity: 0.5 !important;
+  font-weight: 400 !important;
+  margin-right: 1px !important;
+}
+
+/* —— 各维度分色 —— */
+.fishoj-tag-group--source .fishoj-tag-group__dot { background: #8a93a6 !important; }
+.fishoj-tag-group--source .fishoj-tag-group__body > * {
+  color: #5b6577 !important;
+  background: rgba(140, 150, 170, 0.14) !important;
+  border-color: rgba(140, 150, 170, 0.30) !important;
+}
+.fishoj-tag-group--event .fishoj-tag-group__dot { background: #2f6bff !important; }
+.fishoj-tag-group--event .fishoj-tag-group__body > * {
+  color: #1f57e6 !important;
+  background: rgba(47, 107, 255, 0.12) !important;
+  border-color: rgba(47, 107, 255, 0.34) !important;
+}
+.fishoj-tag-group--knowledge .fishoj-tag-group__dot { background: #f97316 !important; }
+.fishoj-tag-group--knowledge .fishoj-tag-group__body > * {
+  color: #b45309 !important;
+  background: rgba(255, 196, 94, 0.18) !important;
+  border-color: rgba(249, 115, 22, 0.40) !important;
+  font-weight: 600 !important;
+}
+
+/* —— 暗色微调 —— */
+html.theme--dark .fishoj-tag-group--source .fishoj-tag-group__body > *,
+[data-mantine-color-scheme="dark"] .fishoj-tag-group--source .fishoj-tag-group__body > * {
+  color: #c2c9d6 !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+html.theme--dark .fishoj-tag-group--event .fishoj-tag-group__body > *,
+[data-mantine-color-scheme="dark"] .fishoj-tag-group--event .fishoj-tag-group__body > * {
+  color: #9bc0ff !important;
+  background: rgba(47, 107, 255, 0.18) !important;
+  border-color: rgba(47, 107, 255, 0.40) !important;
+}
+html.theme--dark .fishoj-tag-group--knowledge .fishoj-tag-group__body > *,
+[data-mantine-color-scheme="dark"] .fishoj-tag-group--knowledge .fishoj-tag-group__body > * {
+  color: #ffd27a !important;
+  background: rgba(255, 196, 94, 0.16) !important;
+  border-color: rgba(249, 115, 22, 0.45) !important;
+}
+
+/* hover */
+.fishoj-tag-group__body > *:hover {
+  filter: brightness(1.05) !important;
+  transform: translateY(-1px) !important;
+}
