@@ -11,7 +11,6 @@ import './discussion_gilded.css';
 import './manage_gilded.css';
 // 讨论页状态增强（空状态三步引导/鎏金创建卡/节点磁贴/排序Tab）
 import { initDiscussionStatus } from './discussion_status';
-import { initFishDock } from './dock';
 // 比赛列表页状态增强（三态徽标/倒计时/赛制分色/RATED火焰/人数热门）
 import { initContestStatus } from './contest_status';
 // 训练列表页状态增强（元信息徽标/规模分级/三态进度/右栏鎏金/筛选Tab）
@@ -40,15 +39,6 @@ if (typeof document !== 'undefined') {
         }
         window.location.href = `${prefix}/discuss/node/news/create`;
     }, true);
-}
-
-// 全局 AI 悬浮入口（小方块 → 中等浮窗），全站可见
-if (typeof document !== 'undefined') {
-    const mountFishDock = () => {
-        try { initFishDock(); } catch { /* dock 异常不影响整站渲染 */ }
-    };
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountFishDock);
-    else mountFishDock();
 }
 
 // 比赛列表页状态增强（倒计时 / LIVE 进度条 / 赛制分色等），全站注入后自动对 .contest__item 生效
