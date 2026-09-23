@@ -1,0 +1,135 @@
+/* IDE 官方题解页签卡片（不引用外网字体，避免拖垮 problem_ide 打包） */
+#content-textSol.problem-ide-textsol {
+  padding: 4px 2px 20px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #1f2937;
+}
+#content-textSol.problem-ide-textsol > :first-child { margin-top: 0; }
+#content-textSol.problem-ide-textsol h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+#content-textSol.problem-ide-textsol h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 20px 0 10px;
+}
+#content-textSol.problem-ide-textsol h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 20px 0 10px;
+}
+#content-textSol.problem-ide-textsol p { margin: 0 0 12px; }
+#content-textSol.problem-ide-textsol ol,
+#content-textSol.problem-ide-textsol ul {
+  margin: 8px 0 12px;
+  padding-left: 1.45em;
+}
+#content-textSol.problem-ide-textsol .fish-sol-switcher {
+  margin: 16px 0 20px;
+  border: 1px solid #e8eaed;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+#content-textSol.problem-ide-textsol .fish-sol-switcher__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eef0f3;
+  background: #fafbfc;
+}
+#content-textSol.problem-ide-textsol .fish-sol-switcher__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+#content-textSol.problem-ide-textsol .fish-sol-switcher__tab {
+  margin: 0;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1.3;
+}
+#content-textSol.problem-ide-textsol .fish-sol-switcher__tab:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+#content-textSol.problem-ide-textsol .fish-sol-switcher__tab.is-active {
+  background: #fff;
+  color: #111827;
+  box-shadow: 0 0 0 1px #e5e7eb;
+}
+#content-textSol.problem-ide-textsol .fish-sol-switcher__copy {
+  margin: 0;
+  padding: 4px 10px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+#content-textSol.problem-ide-textsol .fish-sol-switcher__copy:hover { color: #4b5563; }
+#content-textSol.problem-ide-textsol .fish-sol-switcher__panel {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+#content-textSol.problem-ide-textsol .fish-sol-switcher__panel.is-active { display: block !important; }
+#content-textSol.problem-ide-textsol .fish-sol-switcher__panel code {
+  display: block;
+  padding: 16px 18px !important;
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+  color: #1f2937 !important;
+  background: transparent !important;
+  overflow-x: auto;
+  font-family: Consolas, Monaco, ui-monospace, monospace !important;
+}
+#content-textSol.problem-ide-textsol .line-numbers-rows,
+#content-textSol.problem-ide-textsol .code-toolbar > .toolbar {
+  display: none !important;
+}
+html.theme--dark #content-textSol.problem-ide-textsol { color: #e8eaed; }
+html.theme--dark #content-textSol.problem-ide-textsol .fish-sol-switcher {
+  background: #1e1e1e;
+  border-color: #3a3a3a;
+}
+html.theme--dark #content-textSol.problem-ide-textsol .fish-sol-switcher__bar {
+  background: #252526;
+  border-bottom-color: #3a3a3a;
+}
+html.theme--dark #content-textSol.problem-ide-textsol .fish-sol-switcher__tab { color: #9ca3af; }
+html.theme--dark #content-textSol.problem-ide-textsol .fish-sol-switcher__tab:hover {
+  background: #2d2d30;
+  color: #e5e7eb;
+}
+html.theme--dark #content-textSol.problem-ide-textsol .fish-sol-switcher__tab.is-active {
+  background: #1e1e1e;
+  color: #fff;
+  box-shadow: 0 0 0 1px #3a3a3a;
+}
+html.theme--dark #content-textSol.problem-ide-textsol .fish-sol-switcher__copy { color: #8b949e; }
+html.theme--dark #content-textSol.problem-ide-textsol .fish-sol-switcher__panel,
+html.theme--dark #content-textSol.problem-ide-textsol .fish-sol-switcher__panel code {
+  background: #1e1e1e !important;
+  color: #e5e7eb !important;
+}

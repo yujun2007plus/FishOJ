@@ -132,7 +132,7 @@ export function layoutStatementSamples() {
     const host = document.getElementById('problemIdeProblemContent');
     if (!host) return;
 
-    const codes = Array.from(host.querySelectorAll('pre code'));
+    const codes = Array.from(host.querySelectorAll('pre code')).filter((code) => !code.closest('#content-textSol, #content-aiAnalysis'));
     for (const code of codes) {
         const m = (code.getAttribute('class') || '').match(/language-input(\d+)/);
         if (!m) continue;

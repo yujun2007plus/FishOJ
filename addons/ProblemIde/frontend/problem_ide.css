@@ -2420,6 +2420,16 @@ html.page--problem_ide body { overflow: hidden !important; height: 100%; margin:
 .problem-ide-root--ai-analysis-tab [data-fragment-id="problem-description"] > :not(#content-aiAnalysis) {
   display: none !important;
 }
+.problem-ide-root--textsol-tab [data-fragment-id="problem-description"] > :not(#content-textSol) {
+  display: none !important;
+}
+.problem-ide-root--textsol-tab #content-textSol.problem_content {
+  display: block !important;
+}
+.problem-ide-root--textsol-tab #content-textSol .problem-ide-statement-title,
+.problem-ide-root--textsol-tab #content-textSol .problem-ide-content-meta {
+  display: none !important;
+}
 .problem-ide-root--ai-analysis-tab #content-aiAnalysis.problem_content {
   display: flex !important;
   flex-direction: column;

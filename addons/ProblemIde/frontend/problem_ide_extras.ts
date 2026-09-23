@@ -21,7 +21,7 @@ export function injectStatementHeading() {
     if (!html) return;
     document.querySelectorAll('#problemIdeProblemContent .problem_content').forEach((el) => {
         if (!(el instanceof HTMLElement)) return;
-        if (el.id === 'content-aiAnalysis') return;
+        if (el.id === 'content-aiAnalysis' || el.id === 'content-textSol') return;
         el.classList.add('markdown-body');
         if (el.querySelector('.problem-ide-statement-title')) return;
         el.insertAdjacentHTML('afterbegin', html);

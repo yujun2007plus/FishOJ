@@ -2,10 +2,12 @@ import { $ } from '@hydrooj/ui-default';
 
 function syncProblemTabLayout(type: string) {
     const isAi = type === 'aiAnalysis';
-    document.getElementById('problemIdeRoot')
-        ?.classList.toggle('problem-ide-root--ai-analysis-tab', isAi);
+    const isSol = type === 'textSol';
+    const root = document.getElementById('problemIdeRoot');
+    root?.classList.toggle('problem-ide-root--ai-analysis-tab', isAi);
+    root?.classList.toggle('problem-ide-root--textsol-tab', isSol);
     document.querySelector('.problem-ide-left__scroll')
-        ?.classList.toggle('problem-ide-left__scroll--ai', isAi);
+        ?.classList.toggle('problem-ide-left__scroll--ai', isAi || isSol);
 }
 
 export function showProblemTab($root: ReturnType<typeof $>, type: string) {
