@@ -30,7 +30,7 @@
           <div class="row">
           {{ form.form_text({
                row:false,
-               columns:9,
+               columns:6,
                label:'Tags',
                help_text:'Split by \', \'.',
                name:'tag',
@@ -47,14 +47,18 @@
           </div>
           {% if page_name == 'problem_edit' and pdoc %}
           <div class="row">
-            <div class="medium-12 columns">
-              <p class="fish-sol-edit-entry">
-                <strong>{{ _('TextSol') }}</strong>
-                {% if hasTextSol or pdoc.hasTextSol %}已有官方题解{% else %}尚未创建官方题解{% endif %}
-                ·
-                <a href="{{ url('markdown_edit') }}?pid={{ pdoc.pid|default(pdoc.docId) }}">创建 / 编辑题解</a>
-                （题面与题解同一页，保存互不影响）
-              </p>
+            <div class="medium-10 columns">
+              <label>
+                {{ _('TextSol') }}
+                <div class="help-text">官方文字题解，右侧进入 Markdown 编辑</div>
+                <input class="textbox" readonly value="{% if hasTextSol or pdoc.hasTextSol %}已有官方题解{% else %}尚未创建{% endif %}">
+              </label>
+            </div>
+            <div class="medium-2 columns">
+              <label>
+                <br>
+                <a class="rounded primary button" href="{{ url('markdown_edit') }}?pid={{ pdoc.pid|default(pdoc.docId) }}">创建 / 编辑题解</a>
+              </label>
             </div>
           </div>
           {% else %}

@@ -1,24 +1,197 @@
-.fish-sol-edit-entry {
+/* 对齐 CodeFun MarkdownEdit / markdown-body 阅读排版（仅编辑题面与题解页） */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700&display=swap');
+
+.page--markdown_edit .fish-md-edit__nav {
   margin: 8px 0 16px;
-  padding: 10px 12px;
-  border: 1px solid rgba(23, 42, 84, 0.12);
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.page--markdown_edit #markdown-body,
+.page--markdown_edit .markdown-body,
+.page--markdown_edit .md-editor-preview {
+  font-size: 18px;
+  line-height: 1.5;
+  font-weight: 400 !important;
+  color: #010101;
+  font-family: 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.page--markdown_edit .markdown-body > .section > h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 24px 0 16px;
+  color: #3c4043;
+}
+
+.page--markdown_edit .md-editor {
+  min-height: 520px;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  background: #f8fafc;
+  overflow: hidden;
+  background: #fff;
 }
-.theme--dark .fish-sol-edit-entry {
-  background: #1a2332;
-  border-color: #334155;
+
+.page--markdown_edit .md-editor-preview,
+.page--markdown_edit .md-editor-preview.markdown-body {
+  padding: 16px 20px;
 }
-.fish-md-edit .md-editor {
-  min-height: 420px;
+
+.page--markdown_edit .md-editor-preview h1,
+.page--markdown_edit .markdown-body h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 24px;
+  padding-bottom: 16px;
+  color: #202124;
 }
-.problem-ide-edit-links {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin: 0 0 8px;
-  font-size: 13px;
+
+.page--markdown_edit .md-editor-preview h2,
+.page--markdown_edit .markdown-body h2 {
+  font-size: 26px;
+  font-weight: 600;
+  margin: 20px 0;
+  color: #202124;
 }
-.problem-ide-edit-links a {
-  color: var(--fishoj-navy-2, #19376d);
+
+.page--markdown_edit .md-editor-preview h3,
+.page--markdown_edit .markdown-body h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 32px 0 16px;
+  color: #3c4043;
+}
+
+.page--markdown_edit .md-editor-preview p,
+.page--markdown_edit .markdown-body p {
+  margin-bottom: 12px;
+}
+
+.page--markdown_edit .md-editor-preview strong,
+.page--markdown_edit .markdown-body strong {
+  font-weight: 700;
+}
+
+.page--markdown_edit .md-editor-preview :not(pre) > code,
+.page--markdown_edit .markdown-body :not(pre) > code {
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 14px;
+  color: #e83e8c;
+}
+
+.page--markdown_edit .md-editor-preview pre,
+.page--markdown_edit .markdown-body pre {
+  background: #282828;
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.page--markdown_edit .md-editor-preview pre code,
+.page--markdown_edit .markdown-body pre code {
+  background: #282828;
+  padding: 16px;
+  display: block;
+  overflow-x: auto;
+  color: #e5e7eb;
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+}
+
+.page--markdown_edit .md-editor-preview ul,
+.page--markdown_edit .md-editor-preview ol,
+.page--markdown_edit .markdown-body ul,
+.page--markdown_edit .markdown-body ol {
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+
+.page--markdown_edit .md-editor-preview li,
+.page--markdown_edit .markdown-body li {
+  margin-bottom: 8px;
+}
+
+.page--markdown_edit .md-editor-preview blockquote,
+.page--markdown_edit .markdown-body blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 16px;
+  margin: 20px 0;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.page--markdown_edit .md-editor-preview table,
+.page--markdown_edit .markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.page--markdown_edit .md-editor-preview th,
+.page--markdown_edit .md-editor-preview td,
+.page--markdown_edit .markdown-body th,
+.page--markdown_edit .markdown-body td {
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  text-align: left;
+}
+
+.page--markdown_edit .md-editor-preview th,
+.page--markdown_edit .markdown-body th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.page--markdown_edit .md-editor-preview a,
+.page--markdown_edit .markdown-body a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.page--markdown_edit .md-editor-preview img,
+.page--markdown_edit .markdown-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 20px auto;
+}
+
+.page--markdown_edit [data-fish-md-save] {
+  margin-top: 12px;
+}
+
+.page--problem_edit .fish-sol-edit-entry,
+.page--problem_create .fish-sol-edit-entry {
+  margin: 4px 0 12px;
+}
+
+.theme--dark.page--markdown_edit .markdown-body,
+.theme--dark.page--markdown_edit .md-editor-preview,
+html.theme--dark .page--markdown_edit .markdown-body,
+html.theme--dark .page--markdown_edit .md-editor-preview {
+  color: #c9d1d9;
+}
+
+html.theme--dark .page--markdown_edit .md-editor {
+  background: #0d1117;
+  border-color: #30363d;
+}
+
+html.theme--dark .page--markdown_edit .md-editor-preview h1,
+html.theme--dark .page--markdown_edit .md-editor-preview h2,
+html.theme--dark .page--markdown_edit .md-editor-preview h3 {
+  color: #c9d1d9;
+}
+
+html.theme--dark .page--markdown_edit .md-editor-preview :not(pre) > code {
+  background: #21262d;
+  color: #ffa116;
 }
