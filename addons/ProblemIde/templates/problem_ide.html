@@ -276,10 +276,17 @@
       <div id="problemIdeSettingsPanel" class="problem-ide-settings problem-ide-settings--hidden">
         <label>字号 <input type="number" id="problemIdeFontSize" min="10" max="28" value="14" /></label>
         <label>主题 <select id="problemIdeThemeSelect" class="problem-ide-settings__select"></select></label>
-        {% if aiAssistant and aiAssistant.enabled %}
+        {% if learning and (learning.tutorEnabled or learning.assistantEnabled or (aiAssistant and aiAssistant.enabled)) %}
         <div class="problem-ide-settings__divider" role="separator"></div>
-        <label class="problem-ide-settings__toggle" title="关闭后可在本面板重新开启">
+        {% endif %}
+        {% if aiAssistant and aiAssistant.enabled %}
+        <label class="problem-ide-settings__toggle" title="关闭后停用 AI 助教，刷新页面仍可在本面板重新开启">
           <input type="checkbox" id="problemIdeAssistantToggle" checked /> AI 助教
+        </label>
+        {% endif %}
+        {% if learning and learning.tutorEnabled %}
+        <label class="problem-ide-settings__toggle" title="关闭后停用编程小助手（苏格拉底式提示）">
+          <input type="checkbox" id="problemIdeTutorToggle" checked /> 编程小助手
         </label>
         {% endif %}
       </div>

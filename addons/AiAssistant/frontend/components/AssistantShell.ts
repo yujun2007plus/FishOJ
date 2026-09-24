@@ -269,6 +269,20 @@ export class AssistantShell {
         this.codingHelperBtn.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
+          // 若编程小助手被用户在右上角关闭，先帮它恢复，再派发事件
+          try {
+            const raw = window.localStorage.getItem('fishoj.tutor.enabled');
+            if (raw === '0' || raw === 'false') {
+              window.localStorage.removeItem('fishoj.tutor.enabled');
+              const toggle = document.getElementById('problemIdeTutorToggle') as HTMLInputElement | null;
+              if (toggle) toggle.checked = true;
+              window.dispatchEvent(new CustomEvent('cf-tutor-enabled-change', {
+                detail: { enabled: true },
+              }));
+            }
+          } catch {
+            /* ignore */
+          }
           document.dispatchEvent(new CustomEvent(PROBLEM_IDE_TUTOR_OPEN, {
             detail: { requestHint: true },
           }));
